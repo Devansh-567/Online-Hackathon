@@ -1,0 +1,6 @@
+{
+  "version": "heuristic-v1",
+  "artifact": null,
+  "notes": "Replace with ONNX/PyTorch export in production.",
+  "trainedAt": "2026-03-01T00:00:00Z"
+}

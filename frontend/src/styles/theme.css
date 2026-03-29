@@ -1,0 +1,19 @@
+/* Design tokens — dark enterprise shell with electric accent */
+
+:root {
+  --sx-bg: #0b0f14;
+  --sx-surface: #121826;
+  --sx-surface-2: #1a2233;
+  --sx-border: rgba(255, 255, 255, 0.08);
+  --sx-text: #e8edf7;
+  --sx-muted: #94a3b8;
+  --sx-accent: #38bdf8;
+  --sx-accent-2: #818cf8;
+  --sx-danger: #f87171;
+  --sx-warn: #fbbf24;
+  --sx-ok: #34d399;
+  --sx-radius: 12px;
+  --sx-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+  --sx-font: 'DM Sans', system-ui, sans-serif;
+  --sx-mono: 'JetBrains Mono', ui-monospace, monospace;
+}
