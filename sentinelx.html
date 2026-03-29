@@ -1,0 +1,2495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SentinelX — Intelligent Expense Governance</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800;900&family=Geist+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+/* ─── TOKENS ─── */
+:root {
+  --white:#ffffff;
+  --gray-25:#fcfcfd;
+  --gray-50:#f9fafb;
+  --gray-100:#f2f4f7;
+  --gray-200:#e4e7ec;
+  --gray-300:#d0d5dd;
+  --gray-400:#98a2b3;
+  --gray-500:#667085;
+  --gray-600:#475467;
+  --gray-700:#344054;
+  --gray-800:#1d2939;
+  --gray-900:#101828;
+
+  --blue-50:#eff8ff;
+  --blue-100:#d1e9ff;
+  --blue-500:#2e90fa;
+  --blue-600:#1570ef;
+  --blue-700:#175cd3;
+  --blue-800:#1849a9;
+
+  --green-50:#ecfdf3;
+  --green-500:#12b76a;
+  --green-600:#039855;
+  --green-700:#027a48;
+
+  --red-50:#fff1f3;
+  --red-500:#f04438;
+  --red-600:#d92d20;
+  --red-700:#b42318;
+
+  --amber-50:#fffaeb;
+  --amber-500:#f79009;
+  --amber-600:#dc6803;
+  --amber-700:#b54708;
+
+  --purple-50:#f4f3ff;
+  --purple-500:#7a5af8;
+  --purple-600:#6938ef;
+  --purple-700:#5925dc;
+
+  --brand:#1570ef;
+  --brand-hover:#175cd3;
+  --brand-light:#eff8ff;
+  --brand-border:#b2ddff;
+
+  --sidebar-bg:#0c111d;
+  --sidebar-text:#94a3b8;
+  --sidebar-text-active:#f8fafc;
+  --sidebar-hover:rgba(255,255,255,0.06);
+  --sidebar-active:rgba(255,255,255,0.1);
+  --sidebar-border:rgba(255,255,255,0.08);
+  --sidebar-section:#475569;
+
+  --bg:var(--gray-50);
+  --surface:var(--white);
+  --border:var(--gray-200);
+  --border-subtle:var(--gray-100);
+  --text-primary:var(--gray-900);
+  --text-secondary:var(--gray-600);
+  --text-tertiary:var(--gray-400);
+
+  --r-sm:6px;
+  --r:8px;
+  --r-md:10px;
+  --r-lg:12px;
+  --r-xl:16px;
+  --r-2xl:20px;
+
+  --shadow-xs:0 1px 2px rgba(16,24,40,.05);
+  --shadow-sm:0 1px 3px rgba(16,24,40,.1),0 1px 2px rgba(16,24,40,.06);
+  --shadow-md:0 4px 8px -2px rgba(16,24,40,.1),0 2px 4px -2px rgba(16,24,40,.06);
+  --shadow-lg:0 12px 16px -4px rgba(16,24,40,.08),0 4px 6px -2px rgba(16,24,40,.03);
+  --shadow-xl:0 20px 24px -4px rgba(16,24,40,.08),0 8px 8px -4px rgba(16,24,40,.03);
+
+  --font:'Geist',sans-serif;
+  --font-mono:'Geist Mono',monospace;
+}
+
+html { scroll-behavior:smooth }
+body { font-family:var(--font);background:var(--bg);color:var(--text-primary);min-height:100vh;-webkit-font-smoothing:antialiased;overflow-x:hidden;font-size:14px;line-height:1.5 }
+
+/* ─── SCREENS ─── */
+.screen{display:none;min-height:100vh}
+.screen.active{display:flex}
+
+/* ══════════════════════════════════════
+   LOGIN
+══════════════════════════════════════ */
+#screen-login {
+  background:var(--gray-50);
+  align-items:center;justify-content:center;
+  position:relative;overflow:hidden
+}
+.login-pattern {
+  position:absolute;inset:0;
+  background-image:
+    radial-gradient(circle at 20% 80%, rgba(21,112,239,0.06) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(122,90,248,0.04) 0%, transparent 50%),
+    linear-gradient(rgba(16,24,40,0.03) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(16,24,40,0.03) 1px,transparent 1px);
+  background-size:auto,auto,40px 40px,40px 40px;
+  pointer-events:none
+}
+.login-container { position:relative;z-index:2;width:100%;max-width:480px;padding:24px }
+.login-logo-row { display:flex;align-items:center;gap:10px;margin-bottom:32px;justify-content:center }
+.login-logo-icon {
+  width:40px;height:40px;border-radius:10px;
+  background:var(--brand);
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 0 0 4px rgba(21,112,239,0.12)
+}
+.login-logo-icon svg { width:20px;height:20px;fill:white }
+.login-wordmark { font-size:22px;font-weight:800;letter-spacing:-0.8px;color:var(--gray-900) }
+.login-card {
+  background:var(--white);border:1px solid var(--border);
+  border-radius:var(--r-xl);padding:32px;
+  box-shadow:var(--shadow-xl)
+}
+.login-card-title { font-size:20px;font-weight:700;letter-spacing:-0.5px;margin-bottom:4px;color:var(--gray-900) }
+.login-card-sub { font-size:13.5px;color:var(--text-secondary);margin-bottom:24px }
+
+/* Role selector */
+.role-tabs { display:flex;gap:6px;margin-bottom:20px;padding:4px;background:var(--gray-100);border-radius:var(--r-md) }
+.role-tab {
+  flex:1;padding:8px 4px;border-radius:var(--r);font-size:12px;font-weight:500;
+  cursor:pointer;text-align:center;transition:all 0.15s;
+  color:var(--text-secondary);user-select:none
+}
+.role-tab.active { background:var(--white);color:var(--text-primary);box-shadow:var(--shadow-xs);font-weight:600 }
+.role-tab:hover:not(.active) { color:var(--text-primary) }
+.role-tab-icon { display:block;font-size:18px;margin-bottom:2px }
+
+.form-group { margin-bottom:16px }
+.form-label { display:block;font-size:12.5px;font-weight:500;color:var(--gray-700);margin-bottom:6px }
+.form-input-wrap { position:relative }
+.form-input {
+  width:100%;padding:10px 14px;
+  background:var(--white);border:1.5px solid var(--border);border-radius:var(--r);
+  font-size:14px;font-family:var(--font);color:var(--text-primary);
+  outline:none;transition:all 0.15s
+}
+.form-input:focus { border-color:var(--brand);box-shadow:0 0 0 3px rgba(21,112,239,0.1) }
+.form-input::placeholder { color:var(--text-tertiary) }
+.form-input.error-field { border-color:var(--red-500) }
+.form-select { cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23667085' d='M6 8L1 3h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center }
+.form-textarea { resize:vertical;min-height:84px;line-height:1.6 }
+
+.btn-login {
+  width:100%;padding:11px;
+  background:var(--brand);color:white;border:none;border-radius:var(--r);
+  font-size:14px;font-weight:600;font-family:var(--font);
+  cursor:pointer;transition:all 0.15s;letter-spacing:-0.1px;margin-top:4px
+}
+.btn-login:hover { background:var(--brand-hover) }
+.btn-login:active { transform:scale(0.99) }
+.btn-login:disabled { opacity:0.6;cursor:not-allowed }
+
+.login-error {
+  padding:10px 12px;background:var(--red-50);border:1px solid #fecdca;
+  border-radius:var(--r);font-size:13px;color:var(--red-700);margin-bottom:12px;display:none;
+  display:flex;align-items:center;gap:8px
+}
+.login-error.hidden { display:none }
+.login-hint {
+  margin-top:16px;padding:12px;background:var(--gray-50);border:1px solid var(--border-subtle);
+  border-radius:var(--r);font-size:11.5px;color:var(--text-secondary);font-family:var(--font-mono);line-height:1.9
+}
+.login-hint b { color:var(--brand) }
+.login-divider { display:flex;align-items:center;gap:10px;margin:16px 0;font-size:11.5px;color:var(--text-tertiary) }
+.login-divider::before,.login-divider::after { content:'';flex:1;height:1px;background:var(--border) }
+
+/* ══════════════════════════════════════
+   INVITE SCREEN
+══════════════════════════════════════ */
+#screen-invite { align-items:center;justify-content:center;background:var(--gray-50);position:relative;overflow:hidden }
+.invite-card { background:var(--white);border:1px solid var(--border);border-radius:var(--r-xl);padding:32px;box-shadow:var(--shadow-xl);max-width:480px;width:100%;margin:24px }
+
+/* ══════════════════════════════════════
+   APP SHELL
+══════════════════════════════════════ */
+#screen-app { flex-direction:column }
+.app-root { display:flex;min-height:100vh }
+
+/* SIDEBAR */
+.sidebar {
+  width:232px;background:var(--sidebar-bg);flex-shrink:0;
+  display:flex;flex-direction:column;
+  position:fixed;height:100vh;z-index:100;
+  border-right:1px solid var(--sidebar-border)
+}
+.sidebar-top { padding:20px 16px 16px;border-bottom:1px solid var(--sidebar-border) }
+.sidebar-brand { display:flex;align-items:center;gap:9px }
+.sidebar-brand-icon {
+  width:30px;height:30px;border-radius:7px;background:var(--brand);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0
+}
+.sidebar-brand-icon svg { width:15px;height:15px;fill:white }
+.sidebar-brand-name { font-size:15px;font-weight:700;letter-spacing:-0.4px;color:white }
+.sidebar-brand-env {
+  font-size:10px;font-family:var(--font-mono);color:var(--sidebar-section);
+  text-transform:uppercase;letter-spacing:0.8px;margin-top:1px
+}
+.sidebar-nav { flex:1;padding:12px 8px;overflow-y:auto }
+.sidebar-nav::-webkit-scrollbar { width:3px }
+.sidebar-nav::-webkit-scrollbar-thumb { background:var(--sidebar-border);border-radius:10px }
+.nav-section { font-size:10px;font-weight:600;color:var(--sidebar-section);
+  letter-spacing:1px;text-transform:uppercase;padding:0 8px;margin:18px 0 4px;font-family:var(--font-mono) }
+.nav-section:first-child { margin-top:4px }
+.nav-item {
+  display:flex;align-items:center;gap:8px;
+  padding:7px 8px;border-radius:6px;cursor:pointer;
+  font-size:13px;color:var(--sidebar-text);transition:all 0.12s;
+  position:relative;user-select:none;font-weight:400
+}
+.nav-item:hover { background:var(--sidebar-hover);color:var(--sidebar-text-active) }
+.nav-item.active { background:var(--sidebar-active);color:var(--sidebar-text-active);font-weight:500 }
+.nav-item-icon { width:15px;height:15px;opacity:0.6;flex-shrink:0;font-size:13px;display:flex;align-items:center;justify-content:center }
+.nav-item.active .nav-item-icon,.nav-item:hover .nav-item-icon { opacity:1 }
+.nav-badge {
+  margin-left:auto;font-size:10px;font-family:var(--font-mono);
+  padding:1px 6px;border-radius:20px;
+  background:rgba(240,68,56,0.2);color:#f97066;font-weight:600
+}
+.nav-badge.muted { background:rgba(255,255,255,0.08);color:var(--sidebar-section) }
+.nav-badge.green { background:rgba(18,183,106,0.2);color:#32d583 }
+.sidebar-footer { padding:12px 8px 16px;border-top:1px solid var(--sidebar-border) }
+.sidebar-user { display:flex;align-items:center;gap:9px;padding:8px;border-radius:8px;cursor:pointer;transition:background 0.12s }
+.sidebar-user:hover { background:var(--sidebar-hover) }
+.user-av { width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0 }
+.sidebar-user-name { font-size:12.5px;font-weight:600;color:var(--sidebar-text-active);line-height:1.2 }
+.sidebar-user-role { font-size:10.5px;color:var(--sidebar-section);font-family:var(--font-mono) }
+.btn-logout {
+  margin-left:auto;width:26px;height:26px;border-radius:6px;
+  background:transparent;border:none;color:var(--sidebar-section);
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  font-size:13px;transition:all 0.12s;flex-shrink:0
+}
+.btn-logout:hover { background:rgba(240,68,56,0.15);color:#f97066 }
+
+/* MAIN */
+.main-content { margin-left:232px;flex:1;min-height:100vh;display:flex;flex-direction:column }
+.topbar {
+  height:52px;background:var(--white);border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 28px;position:sticky;top:0;z-index:50
+}
+.topbar-breadcrumb { display:flex;align-items:center;gap:8px;font-size:13px }
+.topbar-breadcrumb .sep { color:var(--text-tertiary) }
+.topbar-breadcrumb .current { font-weight:600;color:var(--text-primary) }
+.topbar-breadcrumb .parent { color:var(--text-secondary) }
+.topbar-right { display:flex;align-items:center;gap:10px }
+.topbar-clock {
+  font-size:11.5px;font-family:var(--font-mono);color:var(--text-secondary);
+  padding:5px 10px;background:var(--gray-50);border:1px solid var(--border);border-radius:6px
+}
+.page-content { padding:28px;flex:1 }
+.page { display:none }
+.page.active { display:block }
+
+/* ─── BUTTONS ─── */
+.btn {
+  display:inline-flex;align-items:center;gap:6px;
+  padding:9px 14px;border-radius:var(--r);font-size:13.5px;font-weight:500;
+  cursor:pointer;border:none;font-family:var(--font);transition:all 0.12s;white-space:nowrap
+}
+.btn-primary { background:var(--brand);color:white;box-shadow:var(--shadow-xs) }
+.btn-primary:hover { background:var(--brand-hover) }
+.btn-secondary { background:var(--white);color:var(--gray-700);border:1px solid var(--border);box-shadow:var(--shadow-xs) }
+.btn-secondary:hover { background:var(--gray-50);border-color:var(--gray-300) }
+.btn-ghost { background:transparent;color:var(--text-secondary);border:1px solid transparent }
+.btn-ghost:hover { background:var(--gray-100);color:var(--text-primary) }
+.btn-success { background:var(--green-600);color:white }
+.btn-success:hover { background:var(--green-700) }
+.btn-danger { background:var(--red-600);color:white }
+.btn-danger:hover { background:var(--red-700) }
+.btn-warn { background:var(--amber-600);color:white }
+.btn-sm { padding:6px 12px;font-size:12.5px }
+.btn-xs { padding:4px 9px;font-size:12px }
+.btn-full { width:100%;justify-content:center }
+.btn-icon { padding:7px;width:32px;height:32px }
+.btn:disabled { opacity:0.5;cursor:not-allowed }
+
+/* ─── BADGES / PILLS ─── */
+.badge {
+  display:inline-flex;align-items:center;gap:4px;
+  padding:2px 8px;border-radius:20px;font-size:11.5px;font-weight:500;white-space:nowrap
+}
+.badge-dot { width:5px;height:5px;border-radius:50% }
+.badge-green { background:var(--green-50);color:var(--green-700);border:1px solid #a9efc5 }
+.badge-green .badge-dot { background:var(--green-600) }
+.badge-red { background:var(--red-50);color:var(--red-700);border:1px solid #fecdca }
+.badge-red .badge-dot { background:var(--red-500) }
+.badge-amber { background:var(--amber-50);color:var(--amber-700);border:1px solid #fedf89 }
+.badge-amber .badge-dot { background:var(--amber-500) }
+.badge-blue { background:var(--blue-50);color:var(--blue-700);border:1px solid var(--brand-border) }
+.badge-blue .badge-dot { background:var(--brand) }
+.badge-purple { background:var(--purple-50);color:var(--purple-700);border:1px solid #d9d6fe }
+.badge-purple .badge-dot { background:var(--purple-500) }
+.badge-gray { background:var(--gray-100);color:var(--gray-700);border:1px solid var(--gray-200) }
+.badge-gray .badge-dot { background:var(--gray-400) }
+
+/* Role badges */
+.role-badge { display:inline-flex;align-items:center;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600;font-family:var(--font-mono);text-transform:uppercase;letter-spacing:0.3px }
+.rb-admin { background:#fffaeb;color:#b54708;border:1px solid #fedf89 }
+.rb-executive { background:var(--purple-50);color:var(--purple-700);border:1px solid #d9d6fe }
+.rb-manager { background:var(--blue-50);color:var(--blue-700);border:1px solid var(--brand-border) }
+.rb-employee { background:var(--gray-100);color:var(--gray-700);border:1px solid var(--gray-200) }
+
+/* ─── CARDS ─── */
+.card { background:var(--white);border:1px solid var(--border);border-radius:var(--r-lg);box-shadow:var(--shadow-xs) }
+.card-header { padding:14px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between }
+.card-title { font-size:14px;font-weight:600;letter-spacing:-0.2px }
+.card-body { padding:20px }
+.card-footer { padding:12px 20px;border-top:1px solid var(--border-subtle);background:var(--gray-50);border-radius:0 0 var(--r-lg) var(--r-lg) }
+
+/* ─── PAGE HEADING ─── */
+.page-header { margin-bottom:24px }
+.page-header h1 { font-size:22px;font-weight:700;letter-spacing:-0.6px;margin-bottom:3px }
+.page-header p { font-size:13.5px;color:var(--text-secondary) }
+
+/* ─── STAT CARDS ─── */
+.stat-row { display:grid;gap:14px;margin-bottom:20px }
+.stat-row-2 { grid-template-columns:repeat(2,1fr) }
+.stat-row-3 { grid-template-columns:repeat(3,1fr) }
+.stat-row-4 { grid-template-columns:repeat(4,1fr) }
+.stat-card {
+  background:var(--white);border:1px solid var(--border);border-radius:var(--r-lg);
+  padding:18px 20px;box-shadow:var(--shadow-xs)
+}
+.stat-label { font-size:11.5px;font-weight:500;color:var(--text-secondary);margin-bottom:8px;letter-spacing:0.1px }
+.stat-value { font-size:26px;font-weight:700;letter-spacing:-1px;line-height:1;margin-bottom:5px }
+.stat-sub { font-size:12px;color:var(--text-tertiary) }
+.stat-change { display:inline-flex;align-items:center;gap:3px;font-size:11.5px;font-weight:500;padding:1px 6px;border-radius:4px }
+.stat-change.up { background:var(--green-50);color:var(--green-700) }
+.stat-change.down { background:var(--red-50);color:var(--red-700) }
+.stat-accent { border-top:2px solid var(--brand) }
+.stat-green { border-top:2px solid var(--green-500) }
+.stat-red { border-top:2px solid var(--red-500) }
+.stat-amber { border-top:2px solid var(--amber-500) }
+.stat-purple { border-top:2px solid var(--purple-500) }
+
+/* ─── TABLE ─── */
+.table-wrap { overflow-x:auto }
+.data-table { width:100%;border-collapse:collapse }
+.data-table th {
+  text-align:left;font-size:11.5px;font-weight:600;color:var(--text-secondary);
+  padding:9px 16px;border-bottom:1px solid var(--border);
+  background:var(--gray-50);letter-spacing:0.2px;white-space:nowrap
+}
+.data-table th:first-child { border-radius:var(--r-lg) 0 0 0 }
+.data-table th:last-child { border-radius:0 var(--r-lg) 0 0 }
+.data-table td { padding:12px 16px;border-bottom:1px solid var(--border-subtle);font-size:13.5px;vertical-align:middle }
+.data-table tbody tr:last-child td { border-bottom:none }
+.data-table tbody tr { transition:background 0.1s }
+.data-table tbody tr:hover { background:var(--gray-25) }
+.data-table tbody tr:hover td { cursor:pointer }
+
+/* ─── PROGRESS ─── */
+.prog { height:5px;background:var(--gray-100);border-radius:10px;overflow:hidden }
+.prog-fill { height:100%;border-radius:10px;transition:width 0.6s ease }
+.prog-blue { background:var(--brand) }
+.prog-green { background:var(--green-500) }
+.prog-red { background:var(--red-500) }
+.prog-amber { background:var(--amber-500) }
+
+/* ─── RISK RING ─── */
+.risk-ring {
+  width:52px;height:52px;border-radius:50%;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0
+}
+.risk-num { font-size:16px;font-weight:700;line-height:1;font-family:var(--font-mono) }
+.risk-sub { font-size:8px;text-transform:uppercase;letter-spacing:0.5px;margin-top:1px;opacity:0.7 }
+.risk-low { background:var(--green-50);color:var(--green-700);border:1.5px solid #a9efc5 }
+.risk-med { background:var(--amber-50);color:var(--amber-700);border:1.5px solid #fedf89 }
+.risk-high { background:var(--red-50);color:var(--red-700);border:1.5px solid #fecdca }
+
+/* ─── GRID LAYOUTS ─── */
+.two-col { display:grid;grid-template-columns:1fr 1fr;gap:16px }
+.three-col { display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px }
+.form-row { display:grid;grid-template-columns:1fr 1fr;gap:12px }
+
+/* ─── DIVIDER ─── */
+.section-sep { margin:24px 0 16px;font-size:12px;font-weight:600;color:var(--text-secondary);display:flex;align-items:center;gap:8px }
+.section-sep::after { content:'';flex:1;height:1px;background:var(--border) }
+
+/* ─── TOGGLE ─── */
+.toggle { width:36px;height:20px;background:var(--gray-200);border-radius:10px;position:relative;cursor:pointer;transition:background 0.2s;flex-shrink:0 }
+.toggle.on { background:var(--brand) }
+.toggle::after { content:'';position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:white;transition:left 0.2s;box-shadow:var(--shadow-xs) }
+.toggle.on::after { left:18px }
+
+/* ─── EMPTY STATE ─── */
+.empty-state { text-align:center;padding:56px 20px;color:var(--text-secondary) }
+.empty-icon { font-size:40px;margin-bottom:14px }
+.empty-title { font-size:17px;font-weight:600;color:var(--text-primary);margin-bottom:6px }
+.empty-sub { font-size:13.5px;line-height:1.6;max-width:320px;margin:0 auto }
+
+/* ─── AUDIT LOG ─── */
+.audit-row {
+  display:grid;grid-template-columns:120px 1fr 90px;
+  gap:16px;padding:11px 20px;border-bottom:1px solid var(--border-subtle);
+  font-size:13px;align-items:flex-start;transition:background 0.1s
+}
+.audit-row:last-child { border-bottom:none }
+.audit-row:hover { background:var(--gray-25) }
+.audit-time { font-family:var(--font-mono);font-size:11px;color:var(--text-tertiary);padding-top:1px }
+.audit-text { color:var(--text-secondary);line-height:1.5 }
+.audit-text b { color:var(--text-primary) }
+.audit-hash { font-family:var(--font-mono);font-size:10.5px;color:var(--text-tertiary);text-align:right }
+
+/* ─── QUEUE CARDS ─── */
+.queue-item {
+  background:var(--white);border:1px solid var(--border);border-radius:var(--r-lg);
+  margin-bottom:10px;overflow:hidden;box-shadow:var(--shadow-xs);transition:border-color 0.15s
+}
+.queue-item:hover { border-color:var(--gray-300) }
+.queue-item.high-risk { border-left:3px solid var(--red-500) }
+.queue-item.med-risk { border-left:3px solid var(--amber-500) }
+.queue-header {
+  padding:14px 18px;display:grid;
+  grid-template-columns:1fr auto auto auto;
+  align-items:center;gap:16px;cursor:pointer
+}
+.queue-expand { display:none;border-top:1px solid var(--border-subtle);background:var(--gray-25) }
+.queue-expand.open { display:block }
+.queue-expand-inner { padding:18px;display:grid;grid-template-columns:1fr 1fr 240px;gap:18px }
+
+/* ─── DRAWER ─── */
+.drawer-overlay {
+  position:fixed;inset:0;background:rgba(16,24,40,0.4);backdrop-filter:blur(2px);
+  z-index:200;opacity:0;pointer-events:none;transition:opacity 0.2s
+}
+.drawer-overlay.open { opacity:1;pointer-events:all }
+.drawer {
+  position:fixed;right:0;top:0;bottom:0;width:400px;
+  background:var(--white);border-left:1px solid var(--border);
+  z-index:201;transform:translateX(100%);transition:transform 0.28s cubic-bezier(0.4,0,0.2,1);
+  display:flex;flex-direction:column;box-shadow:var(--shadow-xl)
+}
+.drawer.open { transform:translateX(0) }
+.drawer-head {
+  padding:16px 20px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;flex-shrink:0
+}
+.drawer-eid { font-family:var(--font-mono);font-size:11px;color:var(--text-tertiary);margin-bottom:3px }
+.drawer-title { font-size:16px;font-weight:700;letter-spacing:-0.3px }
+.drawer-close-btn {
+  width:28px;height:28px;border-radius:6px;background:var(--gray-100);border:none;
+  display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-secondary);font-size:13px;transition:all 0.1s
+}
+.drawer-close-btn:hover { background:var(--gray-200);color:var(--text-primary) }
+.drawer-body { flex:1;overflow-y:auto;padding:18px 20px }
+.detail-item {
+  display:flex;justify-content:space-between;align-items:flex-start;
+  padding:9px 0;border-bottom:1px solid var(--border-subtle);gap:16px
+}
+.detail-item:last-child { border-bottom:none }
+.detail-key { font-size:12px;color:var(--text-secondary);font-weight:500;flex-shrink:0 }
+.detail-val { font-size:13px;text-align:right;font-weight:500 }
+
+/* ─── MODAL ─── */
+.modal-overlay {
+  position:fixed;inset:0;background:rgba(16,24,40,0.5);backdrop-filter:blur(4px);
+  z-index:300;display:none;align-items:center;justify-content:center;padding:20px
+}
+.modal-overlay.open { display:flex }
+.modal-box {
+  background:var(--white);border:1px solid var(--border);border-radius:var(--r-xl);
+  padding:28px;width:100%;max-width:500px;box-shadow:var(--shadow-xl)
+}
+.modal-title { font-size:18px;font-weight:700;letter-spacing:-0.4px;margin-bottom:4px }
+.modal-sub { font-size:13px;color:var(--text-secondary);margin-bottom:22px }
+.modal-actions { display:flex;gap:8px;justify-content:flex-end;margin-top:22px }
+
+/* ─── TOAST ─── */
+.toast-stack { position:fixed;bottom:20px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:8px;align-items:flex-end }
+.toast {
+  display:flex;align-items:center;gap:10px;padding:11px 16px;
+  border-radius:10px;font-size:13px;font-weight:500;
+  box-shadow:var(--shadow-lg);animation:toastIn 0.25s ease;
+  border:1px solid transparent;max-width:340px;background:var(--white)
+}
+.toast-success { border-color:#a9efc5;color:var(--green-700) }
+.toast-danger { border-color:#fecdca;color:var(--red-700) }
+.toast-warn { border-color:#fedf89;color:var(--amber-700) }
+.toast-info { border-color:var(--brand-border);color:var(--blue-700) }
+@keyframes toastIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+@keyframes toastOut { to{opacity:0;transform:translateY(8px)} }
+
+/* ─── POLICY ROWS ─── */
+.policy-item { display:flex;justify-content:space-between;align-items:center;padding:13px 20px;border-bottom:1px solid var(--border-subtle) }
+.policy-item:last-child { border-bottom:none }
+.policy-name { font-size:13.5px;font-weight:500 }
+.policy-desc { font-size:12px;color:var(--text-secondary);margin-top:1px }
+.settings-item { display:flex;justify-content:space-between;align-items:center;padding:13px 20px;border-bottom:1px solid var(--border-subtle) }
+.settings-item:last-child { border-bottom:none }
+
+/* ─── APPROVAL FLOW ─── */
+.flow-wrap { display:flex;align-items:center;padding:12px 0 }
+.flow-step { display:flex;align-items:center;gap:7px }
+.flow-node {
+  width:28px;height:28px;border-radius:50%;background:var(--gray-100);border:1.5px solid var(--border);
+  display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;
+  flex-shrink:0;color:var(--text-secondary)
+}
+.flow-step.done .flow-node { background:var(--green-50);border-color:#a9efc5;color:var(--green-700) }
+.flow-step.active .flow-node { background:var(--blue-50);border-color:var(--brand-border);color:var(--brand) }
+.flow-step-name { font-size:12px;font-weight:600 }
+.flow-step-sub { font-size:10.5px;color:var(--text-secondary) }
+.flow-line { flex:1;height:1px;background:var(--border);margin:0 4px;min-width:12px }
+
+/* ─── COMMENT ─── */
+.comment-item { padding:10px 0;border-bottom:1px solid var(--border-subtle) }
+.comment-item:last-child { border-bottom:none }
+.comment-meta { display:flex;align-items:center;gap:6px;margin-bottom:3px }
+.comment-author { font-size:12.5px;font-weight:600 }
+.comment-time { font-size:11px;color:var(--text-tertiary);font-family:var(--font-mono) }
+.comment-text { font-size:13px;color:var(--text-secondary);line-height:1.5 }
+
+/* ─── AI PANEL ─── */
+.ai-panel { background:var(--gray-50);border:1px solid var(--border);border-radius:var(--r-md) }
+.ai-panel-head {
+  padding:10px 14px;border-bottom:1px solid var(--border);
+  font-size:11.5px;font-weight:600;color:var(--text-secondary);
+  display:flex;align-items:center;gap:6px
+}
+.ai-flag-item {
+  display:flex;align-items:flex-start;gap:8px;padding:8px 14px;
+  border-bottom:1px solid var(--border-subtle);font-size:12.5px;color:var(--text-secondary);line-height:1.5
+}
+.ai-flag-item:last-child { border-bottom:none }
+.ai-sev {
+  font-size:9.5px;font-family:var(--font-mono);padding:1px 5px;border-radius:3px;
+  flex-shrink:0;font-weight:700;margin-top:2px;text-transform:uppercase
+}
+.ai-sev-high { background:var(--red-50);color:var(--red-700) }
+.ai-sev-med { background:var(--amber-50);color:var(--amber-700) }
+.ai-sev-low { background:var(--gray-100);color:var(--gray-600) }
+
+/* ─── UPLOAD ─── */
+.upload-zone {
+  border:2px dashed var(--border);border-radius:var(--r-md);padding:28px;text-align:center;cursor:pointer;transition:all 0.15s
+}
+.upload-zone:hover { border-color:var(--brand);background:var(--brand-light) }
+.upload-icon { font-size:24px;margin-bottom:8px }
+.upload-title { font-size:13.5px;font-weight:500;margin-bottom:3px }
+.upload-sub { font-size:12px;color:var(--text-tertiary) }
+
+/* ─── OCR RESULT ─── */
+.ocr-card { background:var(--white);border:1px solid var(--border);border-radius:var(--r-md);margin-top:12px;overflow:hidden }
+.ocr-head { padding:9px 14px;background:var(--green-50);border-bottom:1px solid #a9efc5;display:flex;justify-content:space-between;align-items:center }
+.ocr-head-title { font-size:12px;font-weight:600;color:var(--green-700) }
+.ocr-row { display:flex;justify-content:space-between;padding:7px 14px;border-bottom:1px solid var(--border-subtle) }
+.ocr-row:last-child { border-bottom:none }
+.ocr-key { font-size:11px;color:var(--text-tertiary);font-family:var(--font-mono);text-transform:uppercase;font-weight:500 }
+.ocr-val { font-size:12.5px;font-family:var(--font-mono);font-weight:600 }
+
+/* ─── RISK DISPLAY (big) ─── */
+.risk-big-wrap { text-align:center;padding:20px;border-bottom:1px solid var(--border-subtle) }
+.risk-big-num { font-size:56px;font-weight:800;letter-spacing:-3px;line-height:1;font-family:var(--font-mono) }
+.risk-low-color { color:var(--green-600) }
+.risk-med-color { color:var(--amber-600) }
+.risk-high-color { color:var(--red-600) }
+.risk-big-label { font-size:12px;color:var(--text-secondary);margin-top:4px;font-weight:500 }
+.factor-row { display:flex;align-items:center;gap:10px;margin-bottom:9px }
+.factor-label { font-size:12px;color:var(--text-secondary);width:120px;flex-shrink:0 }
+.factor-val { font-size:11.5px;font-family:var(--font-mono);color:var(--text-secondary);width:28px;text-align:right;flex-shrink:0 }
+
+/* ─── COMPARE BARS ─── */
+.bar-compare { display:flex;align-items:center;gap:10px;margin-bottom:10px }
+.bar-compare-label { font-size:13px;width:100px;flex-shrink:0;color:var(--text-primary) }
+.bar-track { flex:1;background:var(--gray-100);border-radius:4px;height:24px;overflow:hidden;position:relative }
+.bar-fill {
+  height:100%;border-radius:4px;display:flex;align-items:center;padding-left:8px;
+  font-size:11.5px;font-family:var(--font-mono);color:rgba(255,255,255,0.95);font-weight:500;
+  transition:width 0.6s ease;min-width:2px
+}
+.bar-compare-val { font-family:var(--font-mono);font-size:12px;color:var(--text-secondary);width:52px;text-align:right;flex-shrink:0 }
+
+/* ─── INVITE BANNER ─── */
+.invite-banner {
+  background:var(--blue-50);border:1px solid var(--brand-border);border-radius:var(--r-lg);
+  padding:14px 18px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;gap:14px
+}
+.invite-url {
+  font-family:var(--font-mono);font-size:11px;color:var(--brand);
+  padding:5px 10px;background:white;border:1px solid var(--brand-border);border-radius:5px;word-break:break-all;flex:1
+}
+
+/* ─── TRUST SCORE ─── */
+.trust-big { font-size:64px;font-weight:800;letter-spacing:-4px;line-height:1;font-family:var(--font-mono) }
+
+/* ─── ANIMATIONS ─── */
+.fade-in { animation:fadeUp 0.3s ease both }
+.d1 { animation-delay:0.04s } .d2 { animation-delay:0.08s } .d3 { animation-delay:0.12s } .d4 { animation-delay:0.16s }
+@keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+
+/* ─── EXECUTIVE GRID ─── */
+.exec-kpi-grid { display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px }
+.exec-kpi {
+  background:var(--white);border:1px solid var(--border);border-radius:var(--r-lg);
+  padding:18px 20px;box-shadow:var(--shadow-xs)
+}
+.exec-kpi-label { font-size:11.5px;font-weight:500;color:var(--text-secondary);margin-bottom:6px }
+.exec-kpi-value { font-size:26px;font-weight:700;letter-spacing:-1px;line-height:1;margin-bottom:3px }
+.exec-kpi-change { font-size:12px;color:var(--text-tertiary) }
+.exec-sparkline { display:flex;align-items:flex-end;gap:2px;height:28px;margin-top:10px }
+.spark-b { width:7px;border-radius:2px 2px 0 0;background:var(--gray-200) }
+.spark-b.hi { background:var(--brand) }
+
+/* ─── RESPONSIVE ─── */
+@media (max-width:900px) {
+  .sidebar { transform:translateX(-100%) }
+  .main-content { margin-left:0 }
+  .stat-row-4 { grid-template-columns:repeat(2,1fr) }
+  .exec-kpi-grid { grid-template-columns:repeat(2,1fr) }
+}
+</style>
+</head>
+<body>
+
+<!-- ════ LOGIN ════ -->
+<div id="screen-login" class="screen active">
+  <div class="login-pattern"></div>
+  <div class="login-container">
+    <div class="login-logo-row">
+      <div class="login-logo-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 2L4 5v6c0 5.25 3.58 10.16 8 11.38C16.42 21.16 20 16.25 20 11V5l-8-3z"/></svg>
+      </div>
+      <div class="login-wordmark">SentinelX</div>
+    </div>
+    <div class="login-card">
+      <div class="login-card-title">Sign in to your workspace</div>
+      <div class="login-card-sub">Select your role and enter your credentials</div>
+      <div class="role-tabs" id="role-tabs">
+        <div class="role-tab active" data-role="admin" onclick="selectRole('admin')">
+          <span class="role-tab-icon">🔐</span>Admin
+        </div>
+        <div class="role-tab" data-role="executive" onclick="selectRole('executive')">
+          <span class="role-tab-icon">📊</span>Exec
+        </div>
+        <div class="role-tab" data-role="manager" onclick="selectRole('manager')">
+          <span class="role-tab-icon">✅</span>Manager
+        </div>
+        <div class="role-tab" data-role="employee" onclick="selectRole('employee')">
+          <span class="role-tab-icon">👤</span>Employee
+        </div>
+      </div>
+      <div class="login-error hidden" id="login-error">
+        <span>⚠</span> Invalid credentials. Please try again.
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email address</label>
+        <input class="form-input" id="login-email" type="email" placeholder="you@company.com" onkeydown="if(event.key==='Enter')doLogin()">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input class="form-input" id="login-pwd" type="password" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()">
+      </div>
+      <button class="btn-login" id="login-btn" onclick="doLogin()">Sign in</button>
+      <div class="login-hint" id="login-hint"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ════ INVITE ════ -->
+<div id="screen-invite" class="screen">
+  <div class="login-pattern"></div>
+  <div class="invite-card" style="position:relative;z-index:2">
+    <div class="login-logo-row" style="justify-content:flex-start;margin-bottom:20px">
+      <div class="login-logo-icon">
+        <svg viewBox="0 0 24 24" fill="white" width="20" height="20"><path d="M12 2L4 5v6c0 5.25 3.58 10.16 8 11.38C16.42 21.16 20 16.25 20 11V5l-8-3z"/></svg>
+      </div>
+      <div class="login-wordmark">SentinelX</div>
+    </div>
+    <div style="font-size:24px;margin-bottom:12px">👋</div>
+    <div id="invite-heading" style="font-size:20px;font-weight:700;letter-spacing:-0.5px;margin-bottom:4px">You've been invited</div>
+    <div id="invite-sub-text" style="font-size:13.5px;color:var(--text-secondary);margin-bottom:22px">Create your account to join SentinelX</div>
+    <div class="form-group"><label class="form-label">Full Name</label><input class="form-input" id="inv-name" placeholder="Your full name"></div>
+    <div class="form-group"><label class="form-label">Email</label><input class="form-input" id="inv-email" type="email" readonly></div>
+    <div class="form-group"><label class="form-label">Create Password</label><input class="form-input" id="inv-pwd" type="password" placeholder="At least 6 characters"></div>
+    <div class="form-group"><label class="form-label">Confirm Password</label><input class="form-input" id="inv-pwd2" type="password" placeholder="Repeat password"></div>
+    <div class="login-error hidden" id="invite-error"><span>⚠</span> <span id="invite-err-msg"></span></div>
+    <button class="btn-login" onclick="completeInvite()">Create Account & Sign in</button>
+  </div>
+</div>
+
+<!-- ════ APP ════ -->
+<div id="screen-app" class="screen">
+  <div class="app-root">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-top">
+        <div class="sidebar-brand">
+          <div class="sidebar-brand-icon">
+            <svg viewBox="0 0 24 24"><path d="M12 2L4 5v6c0 5.25 3.58 10.16 8 11.38C16.42 21.16 20 16.25 20 11V5l-8-3z"/></svg>
+          </div>
+          <div>
+            <div class="sidebar-brand-name">SentinelX</div>
+            <div class="sidebar-brand-env" id="sb-env">Admin Portal</div>
+          </div>
+        </div>
+      </div>
+      <nav class="sidebar-nav" id="sidebar-nav"></nav>
+      <div class="sidebar-footer">
+        <div class="sidebar-user">
+          <div class="user-av" id="sb-av"></div>
+          <div style="flex:1;min-width:0">
+            <div class="sidebar-user-name" id="sb-name" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">User</div>
+            <div class="sidebar-user-role" id="sb-role">role</div>
+          </div>
+          <button class="btn-logout" onclick="doLogout()" title="Sign out">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+          </button>
+        </div>
+      </div>
+    </aside>
+    <!-- Main -->
+    <div class="main-content">
+      <div class="topbar">
+        <div class="topbar-breadcrumb">
+          <span class="parent">SentinelX</span>
+          <span class="sep">/</span>
+          <span class="current" id="topbar-crumb">Dashboard</span>
+        </div>
+        <div class="topbar-right">
+          <div class="topbar-clock" id="topbar-clock"></div>
+          <button class="btn btn-primary btn-sm" id="topbar-cta" style="display:none">+ New</button>
+        </div>
+      </div>
+      <div class="page-content" id="page-content"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ════ DRAWER ════ -->
+<div class="drawer-overlay" id="drawer-overlay" onclick="closeDrawerOnOverlay(event)">
+  <div class="drawer" id="drawer-panel">
+    <div class="drawer-head">
+      <div>
+        <div class="drawer-eid" id="d-eid">EX-0000</div>
+        <div class="drawer-title" id="d-title">Expense Detail</div>
+      </div>
+      <button class="drawer-close-btn" onclick="closeDrawer()">✕</button>
+    </div>
+    <div class="drawer-body" id="d-body"></div>
+  </div>
+</div>
+
+<!-- ════ MODAL ════ -->
+<div class="modal-overlay" id="modal-overlay" onclick="if(event.target===this)closeModal()">
+  <div class="modal-box" id="modal-box"></div>
+</div>
+
+<!-- ════ TOASTS ════ -->
+<div class="toast-stack" id="toast-stack"></div>
+
+<script>
+'use strict';
+
+/* ══════════ STORAGE ══════════ */
+const DB = {
+  get(k) { try { return JSON.parse(localStorage.getItem('sx_' + k)); } catch { return null; } },
+  set(k, v) { localStorage.setItem('sx_' + k, JSON.stringify(v)); },
+  del(k) { localStorage.removeItem('sx_' + k); }
+};
+
+/* ══════════ SEED DATA ══════════ */
+const SEED_USERS = [
+  { id:1, name:'Arjun Kapoor',   email:'admin@sentinelx.in',   pwd:'password123', role:'admin',     dept:'IT Administration', initials:'AK', color:'#1570ef', status:'active', trust:100, managerId:null, joined:'1 Jan 2026' },
+  { id:2, name:'Sunita Rao',     email:'sunita@sentinelx.in',  pwd:'password123', role:'executive', dept:'Finance',           initials:'SR', color:'#7a5af8', status:'active', trust:100, managerId:null, joined:'1 Jan 2026' },
+  { id:3, name:'Vikram Iyer',    email:'vikram@sentinelx.in',  pwd:'password123', role:'manager',   dept:'Engineering',       initials:'VI', color:'#12b76a', status:'active', trust:95,  managerId:2,    joined:'1 Jan 2026' },
+  { id:4, name:'Priya Sharma',   email:'priya@sentinelx.in',   pwd:'password123', role:'employee',  dept:'Engineering',       initials:'PS', color:'#2e90fa', status:'active', trust:82,  managerId:3,    joined:'5 Jan 2026' },
+  { id:5, name:'Ritu Agarwal',   email:'ritu@sentinelx.in',    pwd:'password123', role:'manager',   dept:'Finance',           initials:'RA', color:'#7a5af8', status:'active', trust:90,  managerId:2,    joined:'1 Jan 2026' },
+  { id:6, name:'Sneha Patel',    email:'sneha@sentinelx.in',   pwd:'password123', role:'employee',  dept:'Marketing',         initials:'SP', color:'#f79009', status:'active', trust:31,  managerId:3,    joined:'10 Jan 2026' },
+  { id:7, name:'Rahul Mehta',    email:'rahul@sentinelx.in',   pwd:'password123', role:'employee',  dept:'Sales',             initials:'RM', color:'#f04438', status:'active', trust:55,  managerId:3,    joined:'12 Jan 2026' },
+];
+const SEED_EXPENSES = [
+  { id:'EX-1043', empId:6, dept:'Marketing',   cat:'Hotel',        vendor:'Leela Palace Mumbai',   amount:118000, date:'27 Mar 2026', submitted:'2:34 AM',  status:'flagged',  risk:87, flags:['Duplicate','Off-hours'], note:'',                                       approvedBy:null, comments:[] },
+  { id:'EX-1042', empId:7, dept:'Sales',        cat:'Meals',        vendor:'Karavalli Bangalore',   amount:8200,   date:'28 Mar 2026', submitted:'2:47 AM',  status:'pending',  risk:61, flags:['Off-hours'],             note:'Client dinner',                          approvedBy:null, comments:[] },
+  { id:'EX-1045', empId:4, dept:'Engineering',  cat:'Software',     vendor:'Figma Pro Annual',      amount:11900,  date:'15 Mar 2026', submitted:'10:00 AM', status:'pending',  risk:34, flags:[],                        note:'Design team subscription renewal',       approvedBy:null, comments:[] },
+  { id:'EX-1041', empId:4, dept:'Engineering',  cat:'Travel',       vendor:'IndiGo Airlines',       amount:42500,  date:'28 Mar 2026', submitted:'9:30 AM',  status:'approved', risk:18, flags:[],                        note:'Bangalore–Delhi round trip, conf',       approvedBy:3,    comments:[] },
+  { id:'EX-1040', empId:4, dept:'Engineering',  cat:'Conference',   vendor:'Taj Conference Centre', amount:85000,  date:'27 Mar 2026', submitted:'4:00 PM',  status:'approved', risk:22, flags:[],                        note:'Tech Summit 2026 registration',          approvedBy:3,    comments:[] },
+  { id:'EX-1039', empId:7, dept:'Sales',        cat:'Software',     vendor:'Notion Enterprise',     amount:92000,  date:'25 Mar 2026', submitted:'11:00 AM', status:'pending',  risk:58, flags:['Overspend'],             note:'Team workspace upgrade',                 approvedBy:null, comments:[] },
+  { id:'EX-1029', empId:4, dept:'Engineering',  cat:'Meals',        vendor:'Hard Rock Café Delhi',  amount:6800,   date:'5 Mar 2026',  submitted:'9:00 PM',  status:'rejected', risk:71, flags:['Over limit','No receipt'],note:'Team lunch',                             approvedBy:null, comments:[{author:'Ritu Agarwal',text:'Amount exceeds per-person meal policy (₹2,500). No itemized receipt attached. Please resubmit.',time:'27 Mar · 18:45'}] },
+];
+const SEED_AUDIT = [
+  {id:1,time:'29 Mar · 10:02',text:'<b>Ritu Agarwal</b> approved EX-1040 for ₹85,000 — Priya Sharma',hash:'a3f2b1'},
+  {id:2,time:'29 Mar · 09:48',text:'<b>AI Engine</b> flagged EX-1043 — Risk 87 · Duplicate pattern detected',hash:'9c4e2d'},
+  {id:3,time:'29 Mar · 09:31',text:'<b>Vikram Iyer</b> approved EX-1041 for ₹42,500 — Priya Sharma',hash:'7b1a9e'},
+  {id:4,time:'28 Mar · 14:22',text:'<b>Policy update</b> — Hotel limit changed from ₹6,000 to ₹8,000',hash:'2d8c4f'},
+  {id:5,time:'28 Mar · 02:34',text:'<b>Sneha Patel</b> submitted EX-1043 — ₹1,18,000 · Hotel · Leela Palace',hash:'f4a7b3'},
+];
+const SEED_POLICIES = [
+  {id:1,name:'Meals — per person',desc:'Maximum per-person meal cost per occasion',value:'2500',unit:'₹'},
+  {id:2,name:'Hotel — per night (Metro)',desc:'Maximum hotel rate per night in metros',value:'8000',unit:'₹'},
+  {id:3,name:'Flight — domestic',desc:'Economy class; business allowed for 4h+ flights',value:'12000',unit:'₹'},
+  {id:4,name:'Transport — per trip',desc:'Cab/auto per trip within city',value:'800',unit:'₹'},
+  {id:5,name:'Software subscriptions',desc:'Pre-approval required above this threshold',value:'5000',unit:'₹'},
+  {id:6,name:'Conference & Events',desc:'Director sign-off required',value:'50000',unit:'₹'},
+];
+
+function initData() {
+  if (!DB.get('users'))     DB.set('users',     SEED_USERS);
+  if (!DB.get('expenses'))  DB.set('expenses',  SEED_EXPENSES);
+  if (!DB.get('audit'))     DB.set('audit',     SEED_AUDIT);
+  if (!DB.get('policies'))  DB.set('policies',  SEED_POLICIES);
+  if (!DB.get('nExpId'))    DB.set('nExpId',    1050);
+  if (!DB.get('nUserId'))   DB.set('nUserId',   8);
+  if (!DB.get('invites'))   DB.set('invites',   []);
+  if (!DB.get('notifs'))    DB.set('notifs',    {});
+}
+const getUsers     = () => DB.get('users')    || [];
+const getExpenses  = () => DB.get('expenses') || [];
+const getAudit     = () => DB.get('audit')    || [];
+const getPolicies  = () => DB.get('policies') || [];
+const getInvites   = () => DB.get('invites')  || [];
+const saveUsers    = u  => DB.set('users',    u);
+const saveExpenses = e  => DB.set('expenses', e);
+const getUserById  = id => getUsers().find(u => u.id === id);
+const userName     = id => { const u = getUserById(id); return u ? u.name : 'Unknown'; };
+
+/* ══════════ AUTH ══════════ */
+let CU = null; // current user
+let selRole = 'admin';
+
+function selectRole(r) {
+  selRole = r;
+  document.querySelectorAll('.role-tab').forEach(t => t.classList.toggle('active', t.dataset.role === r));
+  const roleUsers = getUsers().filter(u => u.role === r);
+  const hint = document.getElementById('login-hint');
+  if (roleUsers.length) {
+    document.getElementById('login-email').value = roleUsers[0].email;
+    document.getElementById('login-pwd').value   = '';
+    hint.innerHTML = roleUsers.map(u => `<b>${u.name}</b>: ${u.email} / password123`).join('<br>');
+  } else {
+    hint.innerHTML = `No ${r} accounts yet.`;
+    document.getElementById('login-email').value = '';
+  }
+}
+
+function doLogin() {
+  const email = document.getElementById('login-email').value.trim().toLowerCase();
+  const pwd   = document.getElementById('login-pwd').value;
+  const err   = document.getElementById('login-error');
+  const btn   = document.getElementById('login-btn');
+  const user  = getUsers().find(u => u.email.toLowerCase() === email && u.pwd === pwd && u.status === 'active');
+  if (!user) { err.classList.remove('hidden'); return; }
+  err.classList.add('hidden');
+  btn.textContent = 'Signing in…';
+  btn.disabled = true;
+  CU = user;
+  setTimeout(() => {
+    btn.textContent = 'Sign in'; btn.disabled = false;
+    document.getElementById('screen-login').classList.remove('active');
+    document.getElementById('screen-app').classList.add('active');
+    buildApp();
+    showToast('success', '✓', `Welcome back, ${user.name.split(' ')[0]}!`);
+  }, 400);
+}
+
+function doLogout() {
+  CU = null;
+  document.getElementById('screen-app').classList.remove('active');
+  document.getElementById('screen-login').classList.add('active');
+  selectRole('admin');
+  showToast('info', '→', 'Signed out');
+}
+
+/* ── INVITE ── */
+function checkInviteHash() {
+  if (!location.hash.startsWith('#invite=')) return;
+  const token = location.hash.slice(8);
+  const inv = getInvites().find(i => i.token === token && !i.used);
+  if (!inv) return;
+  document.getElementById('screen-login').classList.remove('active');
+  document.getElementById('screen-invite').classList.add('active');
+  document.getElementById('invite-heading').textContent = `You're invited as ${inv.role}`;
+  document.getElementById('invite-sub-text').textContent = `${inv.invitedBy} has added you to SentinelX`;
+  document.getElementById('inv-email').value = inv.email;
+  window._inv = inv;
+}
+
+function completeInvite() {
+  const inv = window._inv; if (!inv) return;
+  const name = document.getElementById('inv-name').value.trim();
+  const pwd  = document.getElementById('inv-pwd').value;
+  const pwd2 = document.getElementById('inv-pwd2').value;
+  const showErr = msg => { document.getElementById('invite-error').classList.remove('hidden'); document.getElementById('invite-err-msg').textContent = msg; };
+  if (!name)          return showErr('Please enter your name.');
+  if (pwd.length < 6) return showErr('Password must be at least 6 characters.');
+  if (pwd !== pwd2)   return showErr('Passwords do not match.');
+  document.getElementById('invite-error').classList.add('hidden');
+  const users = getUsers();
+  const existing = users.find(u => u.email === inv.email);
+  if (existing) { existing.name = name; existing.pwd = pwd; existing.status = 'active'; existing.initials = initials(name); }
+  else {
+    const nid = DB.get('nUserId') || 8;
+    users.push({ id:nid, name, email:inv.email, pwd, role:inv.role, dept:inv.dept||'General', initials:initials(name), color:randColor(), status:'active', trust:80, managerId:inv.managerId||null, joined:fmtDate(new Date()) });
+    DB.set('nUserId', nid + 1);
+  }
+  const invs = getInvites(); const i = invs.find(x => x.token === inv.token); if (i) i.used = true; DB.set('invites', invs);
+  saveUsers(users);
+  addAudit(`<b>${name}</b> accepted invite and created account (${inv.role})`);
+  location.hash = '';
+  document.getElementById('screen-invite').classList.remove('active');
+  document.getElementById('screen-login').classList.add('active');
+  showToast('success','✓','Account created — sign in to continue.');
+  selectRole(inv.role);
+  document.getElementById('login-email').value = inv.email;
+}
+
+/* ══════════ APP BUILDER ══════════ */
+function buildApp() {
+  const u = CU;
+  document.getElementById('sb-av').textContent  = u.initials;
+  document.getElementById('sb-av').style.background = u.color + '22';
+  document.getElementById('sb-av').style.color  = u.color;
+  document.getElementById('sb-av').style.border = `1.5px solid ${u.color}44`;
+  document.getElementById('sb-name').textContent = u.name;
+  document.getElementById('sb-role').textContent = u.role;
+  document.getElementById('sb-env').textContent  = { admin:'Admin Portal', executive:'Executive View', manager:'Manager Portal', employee:'My Workspace' }[u.role];
+  buildSidebar();
+  buildTopbar();
+  const defaults = { admin:'admin-dashboard', executive:'exec-overview', manager:'mgr-dashboard', employee:'emp-home' };
+  navigate(defaults[u.role]);
+}
+
+const NAV_CFG = {
+  admin:[
+    {section:'Overview',items:[{p:'admin-dashboard',l:'Dashboard',i:'⊞'}]},
+    {section:'Management',items:[
+      {p:'admin-users',l:'User Management',i:'👥',badge:()=>getUsers().length,badgeCls:'muted'},
+      {p:'admin-expenses',l:'All Expenses',i:'🗂',badge:()=>getExpenses().length,badgeCls:'muted'},
+      {p:'admin-approvers',l:'Approval Flows',i:'🔀'},
+    ]},
+    {section:'Governance',items:[
+      {p:'admin-audit',l:'Audit Trail',i:'📋'},
+      {p:'admin-policy',l:'Policy Engine',i:'⚙'},
+      {p:'admin-analytics',l:'Analytics',i:'📊'},
+    ]},
+  ],
+  executive:[
+    {section:'Strategic',items:[
+      {p:'exec-overview',l:'Overview',i:'⊞'},
+      {p:'exec-trends',l:'Spend Trends',i:'📈'},
+      {p:'exec-departments',l:'Departments',i:'🏢'},
+    ]},
+    {section:'Governance',items:[
+      {p:'exec-fraud',l:'Fraud Summary',i:'🛡'},
+      {p:'exec-escalations',l:'Escalations',i:'⚠',badge:()=>getExpenses().filter(e=>e.risk>80&&(e.status==='pending'||e.status==='flagged')).length},
+    ]},
+  ],
+  manager:[
+    {section:'Overview',items:[{p:'mgr-dashboard',l:'Dashboard',i:'⊞'}]},
+    {section:'Approvals',items:[
+      {p:'mgr-queue',l:'Approval Queue',i:'📋',badge:()=>getExpenses().filter(e=>(e.status==='pending'||e.status==='flagged')&&myTeam().some(t=>t.id===e.empId)).length},
+      {p:'mgr-history',l:'Decision History',i:'🕐'},
+    ]},
+    {section:'Team',items:[
+      {p:'mgr-team',l:'My Team',i:'👥',badge:()=>myTeam().length,badgeCls:'muted'},
+      {p:'mgr-settings',l:'Workflow Rules',i:'⚙'},
+    ]},
+  ],
+  employee:[
+    {section:'Overview',items:[
+      {p:'emp-home',l:'Home',i:'⊞'},
+      {p:'emp-notifs',l:'Notifications',i:'🔔',badge:()=>myNotifs().filter(n=>!n.read).length},
+    ]},
+    {section:'Expenses',items:[
+      {p:'emp-submit',l:'New Expense',i:'＋'},
+      {p:'emp-expenses',l:'My Expenses',i:'🗂',badge:()=>getExpenses().filter(e=>e.empId===CU.id).length,badgeCls:'muted'},
+    ]},
+    {section:'Profile',items:[{p:'emp-trust',l:'Trust Score',i:'✓'}]},
+  ],
+};
+
+function myTeam() { return getUsers().filter(u => u.managerId === CU.id); }
+function myNotifs() { return (DB.get('notifs')||{})[CU.id]||[]; }
+
+function buildSidebar() {
+  const cfg = NAV_CFG[CU.role] || [];
+  const nav = document.getElementById('sidebar-nav');
+  nav.innerHTML = cfg.map(sec => `
+    <div class="nav-section">${sec.section}</div>
+    ${sec.items.map(item => {
+      const cnt = item.badge ? item.badge() : 0;
+      return `<div class="nav-item" id="nav-${item.p}" onclick="navigate('${item.p}')">
+        <span class="nav-item-icon">${item.i}</span>
+        ${item.l}
+        ${cnt > 0 ? `<span class="nav-badge ${item.badgeCls||''}">${cnt}</span>` : ''}
+      </div>`;
+    }).join('')}
+  `).join('');
+}
+
+function buildTopbar() {
+  const cta = document.getElementById('topbar-cta');
+  if (CU.role === 'employee') { cta.textContent='+ New Expense'; cta.onclick=()=>navigate('emp-submit'); cta.style.display=''; }
+  else if (CU.role === 'admin') { cta.textContent='+ Add User'; cta.onclick=openAddUserModal; cta.style.display=''; }
+  else { cta.style.display='none'; }
+}
+
+function startClock() {
+  const tick = () => {
+    const el = document.getElementById('topbar-clock');
+    if (el) el.textContent = new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+    setTimeout(tick, 1000);
+  };
+  tick();
+}
+
+/* ══════════ NAVIGATION ══════════ */
+let curPage = '';
+const crumbMap = {
+  'admin-dashboard':'Dashboard','admin-users':'User Management','admin-expenses':'All Expenses',
+  'admin-approvers':'Approval Flows','admin-audit':'Audit Trail','admin-policy':'Policy Engine','admin-analytics':'Analytics',
+  'exec-overview':'Overview','exec-trends':'Spend Trends','exec-departments':'Departments','exec-fraud':'Fraud Summary','exec-escalations':'Escalations',
+  'mgr-dashboard':'Dashboard','mgr-queue':'Approval Queue','mgr-history':'Decision History','mgr-team':'My Team','mgr-settings':'Workflow Rules',
+  'emp-home':'Home','emp-notifs':'Notifications','emp-submit':'New Expense','emp-expenses':'My Expenses','emp-trust':'Trust Score',
+};
+
+function navigate(page) {
+  curPage = page;
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  const ni = document.getElementById('nav-' + page); if (ni) ni.classList.add('active');
+  document.getElementById('topbar-crumb').textContent = crumbMap[page] || page;
+  const area = document.getElementById('page-content');
+  area.innerHTML = `<div class="page active" id="page-root">${renderPage(page)}</div>`;
+  afterRender(page);
+  buildSidebar();
+}
+
+/* ══════════ PAGE RENDERERS ══════════ */
+function renderPage(p) {
+  const map = {
+    'admin-dashboard': renderAdminDashboard,
+    'admin-users':     renderAdminUsers,
+    'admin-expenses':  renderAdminExpenses,
+    'admin-approvers': renderAdminApprovers,
+    'admin-audit':     renderAuditTrail,
+    'admin-policy':    renderPolicyEngine,
+    'admin-analytics': renderAnalytics,
+    'exec-overview':   renderExecOverview,
+    'exec-trends':     renderExecTrends,
+    'exec-departments':renderExecDepts,
+    'exec-fraud':      renderExecFraud,
+    'exec-escalations':renderExecEscalations,
+    'mgr-dashboard':   renderMgrDashboard,
+    'mgr-queue':       renderMgrQueue,
+    'mgr-history':     renderMgrHistory,
+    'mgr-team':        renderMgrTeam,
+    'mgr-settings':    renderMgrSettings,
+    'emp-home':        renderEmpHome,
+    'emp-notifs':      renderEmpNotifs,
+    'emp-submit':      renderEmpSubmit,
+    'emp-expenses':    renderEmpExpenses,
+    'emp-trust':       renderEmpTrust,
+  };
+  return (map[p] || (() => `<div class="page-header"><h1>${p}</h1></div>`))();
+}
+
+function afterRender(page) {
+  if (page === 'emp-submit') updateRisk();
+}
+
+/* ─── ADMIN DASHBOARD ─── */
+function renderAdminDashboard() {
+  const expenses = getExpenses();
+  const users    = getUsers();
+  const pending  = expenses.filter(e => e.status==='pending'||e.status==='flagged');
+  const approved = expenses.filter(e => e.status==='approved');
+  const totalSpend = approved.reduce((a,b) => a+b.amount, 0);
+  return `
+  <div class="page-header fade-in"><h1>Dashboard</h1><p>Platform overview · ${fmtDate(new Date())}</p></div>
+  <div class="stat-row stat-row-4 fade-in d1">
+    <div class="stat-card stat-accent">
+      <div class="stat-label">Total Users</div>
+      <div class="stat-value">${users.length}</div>
+      <div class="stat-sub">${users.filter(u=>u.role==='employee').length} employees · ${users.filter(u=>u.role==='manager').length} managers</div>
+    </div>
+    <div class="stat-card stat-amber">
+      <div class="stat-label">Pending Review</div>
+      <div class="stat-value" style="color:var(--amber-600)">${pending.length}</div>
+      <div class="stat-sub">${expenses.filter(e=>e.flags.length>0).length} AI-flagged</div>
+    </div>
+    <div class="stat-card stat-green">
+      <div class="stat-label">Approved Spend</div>
+      <div class="stat-value" style="color:var(--green-600)">₹${(totalSpend/100000).toFixed(1)}L</div>
+      <div class="stat-sub">${approved.length} expenses</div>
+    </div>
+    <div class="stat-card stat-red">
+      <div class="stat-label">High Risk Cases</div>
+      <div class="stat-value" style="color:var(--red-600)">${expenses.filter(e=>e.risk>70).length}</div>
+      <div class="stat-sub">Risk score &gt; 70</div>
+    </div>
+  </div>
+  <div class="two-col fade-in d2" style="margin-bottom:16px">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Recent Expenses</div>
+        <button class="btn btn-ghost btn-sm" onclick="navigate('admin-expenses')">View all →</button>
+      </div>
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead><tr><th>Employee</th><th>Amount</th><th>Status</th><th>Risk</th></tr></thead>
+          <tbody>
+            ${expenses.slice(0,6).map(e=>`
+              <tr onclick="openDrawer('${e.id}')">
+                <td><div style="font-weight:600">${userName(e.empId)}</div><div style="font-size:11.5px;color:var(--text-secondary)">${e.vendor} · ${e.id}</div></td>
+                <td style="font-family:var(--font-mono);font-weight:600">₹${e.amount.toLocaleString('en-IN')}</td>
+                <td>${statusBadge(e.status)}</td>
+                <td><span style="font-family:var(--font-mono);font-weight:700;font-size:13px;color:${riskColor(e.risk)}">${e.risk}</span></td>
+              </tr>`).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Users</div>
+        <button class="btn btn-ghost btn-sm" onclick="navigate('admin-users')">Manage →</button>
+      </div>
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead><tr><th>Name</th><th>Role</th><th>Status</th></tr></thead>
+          <tbody>
+            ${users.slice(0,6).map(u=>`
+              <tr>
+                <td><div style="display:flex;align-items:center;gap:8px"><div class="user-av" style="width:26px;height:26px;font-size:10px;background:${u.color}22;color:${u.color};border:1.5px solid ${u.color}44">${u.initials}</div><div><div style="font-weight:600">${u.name}</div><div style="font-size:11.5px;color:var(--text-secondary)">${u.dept}</div></div></div></td>
+                <td>${roleBadge(u.role)}</td>
+                <td>${u.status==='active'?'<span class="badge badge-green"><span class="badge-dot"></span>Active</span>':'<span class="badge badge-gray"><span class="badge-dot"></span>Inactive</span>'}</td>
+              </tr>`).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="card fade-in d3">
+    <div class="card-header"><div class="card-title">Recent Audit Events</div><button class="btn btn-ghost btn-sm" onclick="navigate('admin-audit')">Full log →</button></div>
+    ${getAudit().slice(0,5).map(a=>`<div class="audit-row"><div class="audit-time">${a.time}</div><div class="audit-text">${a.text}</div><div class="audit-hash">#${a.hash}</div></div>`).join('')}
+  </div>`;
+}
+
+/* ─── ADMIN USERS ─── */
+function renderAdminUsers() {
+  const users   = getUsers();
+  const invites = getInvites().filter(i => !i.used);
+  return `
+  <div class="page-header fade-in"><h1>User Management</h1><p>${users.length} total accounts · ${users.filter(u=>u.status==='active').length} active</p></div>
+  <div style="display:flex;gap:8px;margin-bottom:16px" class="fade-in d1">
+    <input class="form-input" id="usr-q" style="max-width:260px" placeholder="Search name or email…" oninput="filterUsers()">
+    <select class="form-input form-select" id="usr-rf" style="width:130px" onchange="filterUsers()">
+      <option value="">All Roles</option>
+      <option value="admin">Admin</option><option value="executive">Executive</option>
+      <option value="manager">Manager</option><option value="employee">Employee</option>
+    </select>
+    <button class="btn btn-primary" onclick="openAddUserModal()">+ Add User</button>
+  </div>
+  ${invites.length ? `
+    <div class="invite-banner fade-in d1">
+      <div><div style="font-weight:600;font-size:13.5px;margin-bottom:3px">📧 ${invites.length} pending invite${invites.length>1?'s':''}</div><div style="font-size:12.5px;color:var(--text-secondary)">Share these links so users can set up their accounts.</div></div>
+    </div>
+    ${invites.map(inv=>`
+      <div style="background:var(--white);border:1px solid var(--border);border-radius:var(--r-lg);padding:12px 16px;margin-bottom:8px;display:flex;align-items:center;gap:12px" class="fade-in">
+        <div style="flex:1"><div style="font-weight:600;font-size:13px">${inv.email}</div><div style="font-size:11.5px;color:var(--text-secondary)">${inv.role} · Invited by ${inv.invitedBy}</div></div>
+        <div class="invite-url">${location.origin}${location.pathname}#invite=${inv.token}</div>
+        <button class="btn btn-secondary btn-sm" onclick="copyInviteLink('${inv.token}')">Copy Link</button>
+        <button class="btn btn-ghost btn-sm" onclick="revokeInvite('${inv.token}')">Revoke</button>
+      </div>`).join('')}
+  ` : ''}
+  <div class="card fade-in d2">
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead><tr><th>User</th><th>Role</th><th>Department</th><th>Reports To</th><th>Trust</th><th>Status</th><th>Actions</th></tr></thead>
+        <tbody id="users-tbody">${renderUserRows(users)}</tbody>
+      </table>
+    </div>
+  </div>`;
+}
+
+function renderUserRows(users) {
+  return users.map(u => `
+    <tr>
+      <td>
+        <div style="display:flex;align-items:center;gap:10px">
+          <div class="user-av" style="width:30px;height:30px;font-size:11px;background:${u.color}22;color:${u.color};border:1.5px solid ${u.color}44">${u.initials}</div>
+          <div><div style="font-weight:600">${u.name}</div><div style="font-size:11.5px;color:var(--text-secondary);font-family:var(--font-mono)">${u.email}</div></div>
+        </div>
+      </td>
+      <td>${roleBadge(u.role)}</td>
+      <td style="color:var(--text-secondary)">${u.dept}</td>
+      <td style="font-size:12.5px;color:var(--text-secondary)">${u.managerId ? userName(u.managerId) : '—'}</td>
+      <td><span style="font-family:var(--font-mono);font-weight:700;color:${u.trust>75?'var(--green-600)':u.trust>50?'var(--amber-600)':'var(--red-600)'}">${u.trust||80}</span></td>
+      <td>${u.status==='active'?'<span class="badge badge-green"><span class="badge-dot"></span>Active</span>':u.status==='invited'?'<span class="badge badge-blue"><span class="badge-dot"></span>Invited</span>':'<span class="badge badge-gray"><span class="badge-dot"></span>Inactive</span>'}</td>
+      <td>
+        <div style="display:flex;gap:4px">
+          <button class="btn btn-ghost btn-xs" onclick="openEditUser(${u.id})">Edit</button>
+          <button class="btn btn-ghost btn-xs" onclick="openSendInviteModal(${u.id})">Invite</button>
+          ${u.id!==CU.id?`<button class="btn btn-ghost btn-xs" style="color:var(--red-600)" onclick="deleteUser(${u.id})">Del</button>`:''}
+        </div>
+      </td>
+    </tr>`).join('') || '<tr><td colspan="7" style="text-align:center;padding:40px;color:var(--text-secondary)">No users found</td></tr>';
+}
+
+function filterUsers() {
+  const q  = (document.getElementById('usr-q')?.value||'').toLowerCase();
+  const rf = document.getElementById('usr-rf')?.value||'';
+  let u = getUsers();
+  if (q)  u = u.filter(x => x.name.toLowerCase().includes(q)||x.email.toLowerCase().includes(q));
+  if (rf) u = u.filter(x => x.role === rf);
+  const tb = document.getElementById('users-tbody');
+  if (tb) tb.innerHTML = renderUserRows(u);
+}
+
+/* ─── ADMIN EXPENSES ─── */
+function renderAdminExpenses() {
+  return `
+  <div class="page-header fade-in"><h1>All Expenses</h1><p>${getExpenses().length} total · ₹${(getExpenses().reduce((a,b)=>a+b.amount,0)/100000).toFixed(1)}L cumulative</p></div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px" class="fade-in d1">
+    <input class="form-input" id="exp-q" style="max-width:220px" placeholder="Search employee or vendor…" oninput="filterExpenses()">
+    <select class="form-input form-select" id="exp-sf" style="width:120px" onchange="filterExpenses()">
+      <option value="">All Status</option>
+      <option value="pending">Pending</option><option value="approved">Approved</option>
+      <option value="rejected">Rejected</option><option value="flagged">Flagged</option>
+    </select>
+    <select class="form-input form-select" id="exp-df" style="width:130px" onchange="filterExpenses()">
+      <option value="">All Depts</option>
+      ${[...new Set(getUsers().map(u=>u.dept).filter(Boolean))].map(d=>`<option>${d}</option>`).join('')}
+    </select>
+    <button class="btn btn-secondary btn-sm" onclick="exportCSV()">↓ Export CSV</button>
+  </div>
+  <div class="card fade-in d2">
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead><tr><th>ID</th><th>Employee</th><th>Vendor</th><th>Amount</th><th>Category</th><th>Date</th><th>Status</th><th>Risk</th><th>Actions</th></tr></thead>
+        <tbody id="exp-tbody">${renderExpRows(getExpenses())}</tbody>
+      </table>
+    </div>
+  </div>`;
+}
+
+function renderExpRows(expenses) {
+  return expenses.map(e => `
+    <tr>
+      <td style="font-family:var(--font-mono);font-size:11.5px;color:var(--text-secondary)">${e.id}</td>
+      <td><div style="font-weight:600">${userName(e.empId)}</div><div style="font-size:11.5px;color:var(--text-secondary)">${e.dept}</div></td>
+      <td>${e.vendor}</td>
+      <td style="font-family:var(--font-mono);font-weight:600">₹${e.amount.toLocaleString('en-IN')}</td>
+      <td style="color:var(--text-secondary)">${e.cat}</td>
+      <td style="font-family:var(--font-mono);font-size:12px;color:var(--text-secondary)">${e.date}</td>
+      <td>${statusBadge(e.status)}</td>
+      <td><span style="font-family:var(--font-mono);font-weight:700;color:${riskColor(e.risk)}">${e.risk}</span></td>
+      <td>
+        <div style="display:flex;gap:4px">
+          <button class="btn btn-ghost btn-xs" onclick="openDrawer('${e.id}')">View</button>
+          ${(e.status==='pending'||e.status==='flagged')?`
+            <button class="btn btn-success btn-xs" onclick="approveExpense('${e.id}')">✓</button>
+            <button class="btn btn-danger btn-xs" onclick="openRejectModal('${e.id}')">✗</button>`:''}
+          <button class="btn btn-ghost btn-xs" style="color:var(--red-600)" onclick="deleteExpense('${e.id}')">Del</button>
+        </div>
+      </td>
+    </tr>`).join('') || '<tr><td colspan="9" style="text-align:center;padding:40px;color:var(--text-secondary)">No expenses found</td></tr>';
+}
+
+function filterExpenses() {
+  const q  = (document.getElementById('exp-q')?.value||'').toLowerCase();
+  const sf = document.getElementById('exp-sf')?.value||'';
+  const df = document.getElementById('exp-df')?.value||'';
+  let e = getExpenses();
+  if (q)  e = e.filter(x => userName(x.empId).toLowerCase().includes(q)||x.vendor.toLowerCase().includes(q)||x.id.toLowerCase().includes(q));
+  if (sf) e = e.filter(x => x.status===sf);
+  if (df) e = e.filter(x => x.dept===df);
+  const tb = document.getElementById('exp-tbody'); if (tb) tb.innerHTML = renderExpRows(e);
+}
+
+function exportCSV() {
+  const e = getExpenses();
+  const rows = [['ID','Employee','Dept','Vendor','Amount','Category','Date','Status','Risk']];
+  e.forEach(x => rows.push([x.id,userName(x.empId),x.dept,x.vendor,x.amount,x.cat,x.date,x.status,x.risk]));
+  const csv = rows.map(r=>r.join(',')).join('\n');
+  const a = document.createElement('a'); a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv); a.download='sentinelx_expenses.csv'; a.click();
+  showToast('success','↓','CSV exported');
+}
+
+/* ─── ADMIN APPROVERS ─── */
+function renderAdminApprovers() {
+  const users = getUsers();
+  const approvers = users.filter(u => u.role==='manager'||u.role==='admin'||u.role==='executive');
+  return `
+  <div class="page-header fade-in"><h1>Approval Flows</h1><p>Configure multi-step approval sequences and routing rules</p></div>
+  <div class="two-col">
+    <div class="fade-in d1">
+      <div class="card" style="margin-bottom:14px">
+        <div class="card-header"><div class="card-title">Approval Sequence</div></div>
+        <div class="card-body">
+          <p style="font-size:13px;color:var(--text-secondary);margin-bottom:14px">Expenses route through approvers in order. Each must approve before moving to the next.</p>
+          ${approvers.map((u,i)=>`
+            <div style="display:flex;align-items:center;gap:10px;padding:10px;border:1px solid var(--border);border-radius:var(--r);margin-bottom:8px;background:var(--gray-50)">
+              <div style="font-family:var(--font-mono);font-size:11px;color:var(--text-tertiary);width:18px">${i+1}</div>
+              <div class="user-av" style="width:28px;height:28px;font-size:10px;background:${u.color}22;color:${u.color}">${u.initials}</div>
+              <div style="flex:1"><div style="font-size:13.5px;font-weight:600">${u.name}</div><div style="font-size:11.5px;color:var(--text-secondary)">${u.role} · ${u.dept}</div></div>
+              <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+            </div>`).join('')}
+          <button class="btn btn-primary btn-full" style="margin-top:8px" onclick="showToast('success','✓','Sequence saved')">Save Sequence</button>
+        </div>
+      </div>
+    </div>
+    <div class="fade-in d2">
+      <div class="card" style="margin-bottom:14px">
+        <div class="card-header"><div class="card-title">Conditional Rules</div></div>
+        <div class="card-body">
+          <div class="form-group">
+            <label class="form-label">Auto-approve if N% approve</label>
+            <div style="display:flex;align-items:center;gap:8px"><input class="form-input" type="number" value="60" style="width:80px"> <span style="font-size:13px;color:var(--text-secondary)">% of approvers</span></div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Veto approver (auto-approve if they approve)</label>
+            <select class="form-input form-select">
+              <option value="">None</option>
+              ${approvers.map(u=>`<option value="${u.id}">${u.name} (${u.role})</option>`).join('')}
+            </select>
+          </div>
+          <button class="btn btn-primary btn-full" onclick="showToast('success','✓','Rules saved')">Save Rules</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-title">Threshold Rules</div></div>
+        <div class="settings-item"><div><div style="font-weight:500">Manager approval always first</div><div style="font-size:12px;color:var(--text-secondary)">First step routes to direct manager</div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+        <div class="settings-item"><div><div style="font-weight:500">High-amount escalation</div><div style="font-size:12px;color:var(--text-secondary)">Above ₹1L → executive sign-off required</div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+        <div class="settings-item"><div><div style="font-weight:500">Auto-approve low risk</div><div style="font-size:12px;color:var(--text-secondary)">Risk &lt; 20 and trusted employee → skip queue</div></div><div class="toggle" onclick="this.classList.toggle('on')"></div></div>
+      </div>
+    </div>
+  </div>`;
+}
+
+/* ─── AUDIT TRAIL ─── */
+function renderAuditTrail() {
+  const audit = getAudit();
+  return `
+  <div class="page-header fade-in"><h1>Audit Trail</h1><p>${audit.length} immutable events · Tamper-proof log</p></div>
+  <div class="card fade-in d1">
+    ${audit.map(a=>`<div class="audit-row"><div class="audit-time">${a.time}</div><div class="audit-text">${a.text}</div><div class="audit-hash">#${a.hash}</div></div>`).join('')}
+    ${audit.length===0?'<div class="empty-state"><div class="empty-icon">📋</div><div class="empty-sub">No audit events yet.</div></div>':''}
+  </div>`;
+}
+
+/* ─── POLICY ENGINE ─── */
+function renderPolicyEngine() {
+  const policies = getPolicies();
+  return `
+  <div class="page-header fade-in"><h1>Policy Engine</h1><p>Configure spending limits and AI detection thresholds</p></div>
+  <div class="card fade-in d1" style="margin-bottom:16px">
+    <div class="card-header">
+      <div class="card-title">Spending Limits</div>
+      <button class="btn btn-primary btn-sm" onclick="savePolicies()">Save Changes</button>
+    </div>
+    ${policies.map(p=>`
+      <div class="policy-item">
+        <div><div class="policy-name">${p.name}</div><div class="policy-desc">${p.desc}</div></div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="color:var(--text-secondary);font-size:13px">${p.unit}</span>
+          <input class="form-input" type="number" value="${p.value}" id="pol-${p.id}" style="width:110px">
+        </div>
+      </div>`).join('')}
+  </div>
+  <div class="card fade-in d2">
+    <div class="card-header"><div class="card-title">AI Detection Rules</div></div>
+    <div class="policy-item"><div><div class="policy-name">Duplicate detection window</div><div class="policy-desc">Flag expenses matching within this period</div></div><span style="font-family:var(--font-mono);font-weight:600;color:var(--brand)">7 days</span></div>
+    <div class="policy-item"><div><div class="policy-name">Auto-flag threshold</div><div class="policy-desc">Risk score above this → automatically flagged</div></div><span style="font-family:var(--font-mono);font-weight:600;color:var(--brand)">65</span></div>
+    <div class="settings-item"><div><div style="font-weight:500">Off-hours detection</div><div style="font-size:12px;color:var(--text-secondary)">Flag submissions outside 8AM–10PM</div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+    <div class="settings-item"><div><div style="font-weight:500">Velocity detection</div><div style="font-size:12px;color:var(--text-secondary)">Flag multiple submissions within 24h</div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+    <div class="settings-item"><div><div style="font-weight:500">New vendor auto-flag</div><div style="font-size:12px;color:var(--text-secondary)">First-time vendors queued for manual review</div></div><div class="toggle" onclick="this.classList.toggle('on')"></div></div>
+  </div>`;
+}
+
+function savePolicies() {
+  const p = getPolicies();
+  p.forEach(x => { const el=document.getElementById('pol-'+x.id); if(el) x.value=el.value; });
+  DB.set('policies', p);
+  addAudit(`<b>${CU.name}</b> updated spending policy limits`);
+  showToast('success','✓','Policy saved');
+}
+
+/* ─── ANALYTICS ─── */
+function renderAnalytics() {
+  const expenses = getExpenses();
+  const totalSpend = expenses.reduce((a,b)=>a+b.amount,0);
+  const approved   = expenses.filter(e=>e.status==='approved');
+  const rejected   = expenses.filter(e=>e.status==='rejected');
+  const depts = [...new Set(getUsers().map(u=>u.dept).filter(Boolean))];
+  const deptData = depts.map(d=>({ d, amt:expenses.filter(e=>e.dept===d).reduce((a,b)=>a+b.amount,0) })).sort((a,b)=>b.amt-a.amt);
+  const maxAmt = Math.max(...deptData.map(d=>d.amt),1);
+  const colors = ['#1570ef','#7a5af8','#f79009','#12b76a','#f04438','#2e90fa'];
+  return `
+  <div class="page-header fade-in"><h1>Analytics</h1><p>Company-wide expense intelligence</p></div>
+  <div class="stat-row stat-row-3 fade-in d1">
+    <div class="stat-card stat-accent"><div class="stat-label">Total Spend</div><div class="stat-value">₹${(totalSpend/100000).toFixed(1)}L</div><div class="stat-sub">${expenses.length} submissions</div></div>
+    <div class="stat-card stat-green"><div class="stat-label">AI-Blocked (Savings)</div><div class="stat-value" style="color:var(--green-600)">₹${(rejected.reduce((a,b)=>a+b.amount,0)/100000).toFixed(1)}L</div><div class="stat-sub">${rejected.length} rejected</div></div>
+    <div class="stat-card stat-amber"><div class="stat-label">Approval Rate</div><div class="stat-value">${expenses.length?Math.round(approved.length/expenses.length*100):0}%</div><div class="stat-sub">${approved.length} approved</div></div>
+  </div>
+  <div class="two-col fade-in d2">
+    <div class="card">
+      <div class="card-header"><div class="card-title">Spend by Status</div></div>
+      <div class="card-body">
+        ${['approved','pending','flagged','rejected'].map(s=>{
+          const amt = expenses.filter(e=>e.status===s).reduce((a,b)=>a+b.amount,0);
+          const pct = totalSpend>0?Math.round(amt/totalSpend*100):0;
+          const cs={approved:'#12b76a',pending:'#f79009',flagged:'#f04438',rejected:'#344054'};
+          return `<div class="bar-compare">
+            <div class="bar-compare-label" style="text-transform:capitalize">${s}</div>
+            <div class="bar-track"><div class="bar-fill" style="width:${Math.max(pct,1)}%;background:${cs[s]}">₹${(amt/1000).toFixed(0)}K</div></div>
+            <div class="bar-compare-val">${pct}%</div>
+          </div>`;}).join('')}
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header"><div class="card-title">Spend by Department</div></div>
+      <div class="card-body">
+        ${deptData.map((d,i)=>{
+          const pct=Math.round(d.amt/maxAmt*100);
+          return `<div class="bar-compare">
+            <div class="bar-compare-label">${d.d}</div>
+            <div class="bar-track"><div class="bar-fill" style="width:${Math.max(pct,1)}%;background:${colors[i%colors.length]}">₹${(d.amt/1000).toFixed(0)}K</div></div>
+            <div class="bar-compare-val">₹${(d.amt/1000).toFixed(0)}K</div>
+          </div>`;}).join('')}
+      </div>
+    </div>
+  </div>
+  <div class="card fade-in d3">
+    <div class="card-header"><div class="card-title">Spend by Category</div></div>
+    <div class="card-body">
+      ${['Travel','Hotel','Meals','Software','Conference','Transport','Office Supplies','Other'].map((cat,i)=>{
+        const amt = expenses.filter(e=>e.cat===cat||e.cat==='Meals & Entertainment'&&cat==='Meals').reduce((a,b)=>a+b.amount,0);
+        const pct = totalSpend>0?Math.round(amt/totalSpend*100):0;
+        return `<div class="bar-compare">
+          <div class="bar-compare-label">${cat}</div>
+          <div class="bar-track"><div class="bar-fill" style="width:${Math.max(pct,1)}%;background:${colors[i%colors.length]}">₹${(amt/1000).toFixed(0)}K</div></div>
+          <div class="bar-compare-val">₹${(amt/1000).toFixed(0)}K</div>
+        </div>`;}).join('')}
+    </div>
+  </div>`;
+}
+
+/* ─── EXEC VIEWS ─── */
+function renderExecOverview() {
+  const ex = getExpenses(); const u = getUsers();
+  const approved = ex.filter(e=>e.status==='approved');
+  const totalSpend = approved.reduce((a,b)=>a+b.amount,0);
+  const aiSaved = ex.filter(e=>e.status==='rejected').reduce((a,b)=>a+b.amount,0);
+  const pending = ex.filter(e=>e.status==='pending'||e.status==='flagged');
+  return `
+  <div class="page-header fade-in"><h1>Q1 2026 Executive Overview</h1><p>Company-wide expense governance · Live data</p></div>
+  <div class="exec-kpi-grid fade-in d1">
+    <div class="exec-kpi"><div class="exec-kpi-label">Total Spend</div><div class="exec-kpi-value" style="color:var(--brand)">₹${(totalSpend/100000).toFixed(1)}L</div><div class="exec-kpi-change">${approved.length} approved expenses</div><div class="exec-sparkline">${[40,55,45,65,60,80,88].map((h,i)=>`<div class="spark-b${i>4?' hi':''}" style="height:${h}%"></div>`).join('')}</div></div>
+    <div class="exec-kpi"><div class="exec-kpi-label">AI Savings</div><div class="exec-kpi-value" style="color:var(--green-600)">₹${(aiSaved/100000).toFixed(1)}L</div><div class="exec-kpi-change">Blocked by policy engine</div><div class="exec-sparkline">${[30,50,60,70,80,85,92].map((h,i)=>`<div class="spark-b${i>4?' hi':''}" style="height:${h}%"></div>`).join('')}</div></div>
+    <div class="exec-kpi"><div class="exec-kpi-label">Approval Rate</div><div class="exec-kpi-value">${ex.length?Math.round(approved.length/ex.length*100):0}%</div><div class="exec-kpi-change">of all submissions</div><div class="exec-sparkline">${[70,72,75,78,82,86,88].map((h,i)=>`<div class="spark-b${i>4?' hi':''}" style="height:${h}%"></div>`).join('')}</div></div>
+    <div class="exec-kpi"><div class="exec-kpi-label">Pending Review</div><div class="exec-kpi-value" style="color:var(--amber-600)">${pending.length}</div><div class="exec-kpi-change">${ex.filter(e=>e.risk>70).length} high-risk</div><div class="exec-sparkline">${[90,75,60,50,42,38,35].map((h,i)=>`<div class="spark-b${i<2?' hi':''}" style="height:${h}%"></div>`).join('')}</div></div>
+  </div>
+  <div class="two-col fade-in d2">
+    <div class="card">
+      <div class="card-header"><div class="card-title">Department Spend</div></div>
+      <div class="card-body">
+        ${[...new Set(getUsers().map(u=>u.dept).filter(Boolean))].map((d,i)=>{
+          const amt=ex.filter(e=>e.dept===d&&e.status==='approved').reduce((a,b)=>a+b.amount,0);
+          const pct=totalSpend>0?Math.round(amt/totalSpend*100):0;
+          const cs=['#1570ef','#7a5af8','#f79009','#12b76a','#f04438'];
+          return `<div class="bar-compare"><div class="bar-compare-label">${d}</div><div class="bar-track"><div class="bar-fill" style="width:${Math.max(pct,1)}%;background:${cs[i%cs.length]}">₹${(amt/1000).toFixed(0)}K</div></div><div class="bar-compare-val">${pct}%</div></div>`;}).join('')}
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header"><div class="card-title">High-Risk Expenses</div></div>
+      ${ex.filter(e=>e.risk>60).slice(0,6).map(e=>`
+        <div style="display:flex;align-items:center;gap:14px;padding:12px 18px;border-bottom:1px solid var(--border-subtle)">
+          <div style="flex:1"><div style="font-weight:600;font-size:13.5px">${userName(e.empId)}</div><div style="font-size:11.5px;color:var(--text-secondary)">${e.cat} · ₹${e.amount.toLocaleString('en-IN')}</div></div>
+          <div style="font-family:var(--font-mono);font-size:18px;font-weight:700;color:${riskColor(e.risk)}">${e.risk}</div>
+          ${statusBadge(e.status)}
+        </div>`).join('')}
+      ${ex.filter(e=>e.risk>60).length===0?'<div class="empty-state" style="padding:30px"><div class="empty-icon">🎉</div><div class="empty-sub">No high-risk expenses</div></div>':''}
+    </div>
+  </div>`;
+}
+
+function renderExecTrends() {
+  const ex = getExpenses(); const total=ex.reduce((a,b)=>a+b.amount,0);
+  return `
+  <div class="page-header fade-in"><h1>Spend Trends</h1><p>Historical analysis and category breakdown</p></div>
+  <div class="stat-row stat-row-3 fade-in d1">
+    <div class="stat-card stat-accent"><div class="stat-label">Total Tracked</div><div class="stat-value">₹${(total/100000).toFixed(1)}L</div><div class="stat-sub">All submissions</div></div>
+    <div class="stat-card"><div class="stat-label">Avg per Expense</div><div class="stat-value">₹${ex.length?Math.round(total/ex.length).toLocaleString('en-IN'):0}</div><div class="stat-sub">Per submission</div></div>
+    <div class="stat-card stat-green"><div class="stat-label">Highest Single</div><div class="stat-value">₹${ex.length?Math.max(...ex.map(e=>e.amount)).toLocaleString('en-IN'):0}</div><div class="stat-sub">Top expense</div></div>
+  </div>
+  <div class="card fade-in d2">
+    <div class="card-header"><div class="card-title">Expense by Category</div></div>
+    <div class="card-body">
+      ${['Travel','Hotel','Meals','Software','Conference','Transport'].map((cat,i)=>{
+        const amt=ex.filter(e=>e.cat===cat||(e.cat==='Meals & Entertainment'&&cat==='Meals')).reduce((a,b)=>a+b.amount,0);
+        const pct=total>0?Math.round(amt/total*100):0;
+        const cs=['#1570ef','#7a5af8','#f79009','#12b76a','#f04438','#2e90fa'];
+        return `<div class="bar-compare"><div class="bar-compare-label">${cat}</div><div class="bar-track"><div class="bar-fill" style="width:${Math.max(pct,1)}%;background:${cs[i%cs.length]}">₹${(amt/1000).toFixed(0)}K</div></div><div class="bar-compare-val">₹${(amt/1000).toFixed(0)}K</div></div>`;}).join('')}
+    </div>
+  </div>`;
+}
+
+function renderExecDepts() {
+  const ex = getExpenses(); const users = getUsers();
+  const depts = [...new Set(users.map(u=>u.dept).filter(Boolean))];
+  return `
+  <div class="page-header fade-in"><h1>Departments</h1><p>Compare spending across teams</p></div>
+  <div class="card fade-in d1">
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead><tr><th>Department</th><th>Members</th><th>Total Spend</th><th>Budget Utilization</th><th>Flagged</th><th>Status</th></tr></thead>
+        <tbody>
+          ${depts.map(d=>{
+            const du=users.filter(u=>u.dept===d); const de=ex.filter(e=>e.dept===d);
+            const spend=de.filter(e=>e.status==='approved').reduce((a,b)=>a+b.amount,0);
+            const flagged=de.filter(e=>e.flags.length>0).length;
+            const pct=Math.min(Math.round(spend/500000*100),100);
+            return `<tr>
+              <td style="font-weight:600">${d}</td>
+              <td style="font-family:var(--font-mono)">${du.length}</td>
+              <td style="font-family:var(--font-mono);font-weight:600">₹${(spend/1000).toFixed(0)}K</td>
+              <td><div style="font-family:var(--font-mono);font-size:12px;margin-bottom:4px;color:${pct>90?'var(--red-600)':'var(--text-primary)'}">${pct}%</div><div class="prog"><div class="prog-fill ${pct>90?'prog-red':pct>75?'prog-amber':'prog-blue'}" style="width:${pct}%"></div></div></td>
+              <td style="font-family:var(--font-mono);color:${flagged>0?'var(--red-600)':'var(--text-tertiary)'}">${flagged}</td>
+              <td>${pct>90?'<span class="badge badge-red"><span class="badge-dot"></span>Over budget</span>':pct>75?'<span class="badge badge-amber"><span class="badge-dot"></span>Near limit</span>':'<span class="badge badge-green"><span class="badge-dot"></span>On track</span>'}</td>
+            </tr>`;}).join('')}
+        </tbody>
+      </table>
+    </div>
+  </div>`;
+}
+
+function renderExecFraud() {
+  const ex = getExpenses();
+  const flagged = ex.filter(e=>e.status==='flagged'||e.risk>70);
+  const rejected = ex.filter(e=>e.status==='rejected');
+  return `
+  <div class="page-header fade-in"><h1>Fraud Summary</h1><p>AI-detected anomalies · Executive view</p></div>
+  <div class="stat-row stat-row-3 fade-in d1">
+    <div class="stat-card stat-red"><div class="stat-label">Active Flags</div><div class="stat-value" style="color:var(--red-600)">${flagged.length}</div><div class="stat-sub">${ex.filter(e=>e.risk>80).length} critical</div></div>
+    <div class="stat-card stat-green"><div class="stat-label">Losses Prevented</div><div class="stat-value" style="color:var(--green-600)">₹${(rejected.reduce((a,b)=>a+b.amount,0)/1000).toFixed(0)}K</div><div class="stat-sub">${rejected.length} rejected</div></div>
+    <div class="stat-card"><div class="stat-label">AI Precision</div><div class="stat-value">96.8%</div><div class="stat-sub">Calibrated detection</div></div>
+  </div>
+  <div class="card fade-in d2">
+    <div class="card-header"><div class="card-title">Cases Requiring Action</div></div>
+    ${flagged.map(e=>`
+      <div style="display:flex;align-items:center;gap:14px;padding:14px 20px;border-bottom:1px solid var(--border-subtle)">
+        <div style="flex:1">
+          <div style="font-weight:600">${userName(e.empId)} · ${e.dept}</div>
+          <div style="font-size:12px;color:var(--text-secondary);margin-top:2px">${e.cat} · ${e.id} · ₹${e.amount.toLocaleString('en-IN')} ${e.flags.length?'· '+e.flags.join(', '):''}</div>
+        </div>
+        <div style="font-family:var(--font-mono);font-size:22px;font-weight:700;color:${riskColor(e.risk)}">${e.risk}</div>
+        ${statusBadge(e.status)}
+      </div>`).join('')}
+    ${flagged.length===0?'<div class="empty-state" style="padding:36px"><div class="empty-icon">🎉</div><div class="empty-sub">No fraud cases detected.</div></div>':''}
+  </div>`;
+}
+
+function renderExecEscalations() {
+  const escalated = getExpenses().filter(e=>e.risk>80&&(e.status==='pending'||e.status==='flagged'));
+  return `
+  <div class="page-header fade-in"><h1>Escalations</h1><p>High-risk expenses requiring executive decision</p></div>
+  ${escalated.length===0?'<div class="empty-state fade-in"><div class="empty-icon">✅</div><div class="empty-title">No escalations</div><div class="empty-sub">All high-risk cases have been resolved.</div></div>':''}
+  ${escalated.map(e=>`
+    <div class="card fade-in" style="margin-bottom:14px;border-left:3px solid var(--red-500)">
+      <div class="card-body">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px">
+          <div>
+            <div style="font-family:var(--font-mono);font-size:11px;color:var(--text-secondary);margin-bottom:4px">${e.id} · Risk ${e.risk} · Escalated by AI Engine</div>
+            <div style="font-size:18px;font-weight:700;margin-bottom:4px">₹${e.amount.toLocaleString('en-IN')} — ${e.vendor}</div>
+            <div style="font-size:13px;color:var(--text-secondary)">${userName(e.empId)} · ${e.dept} · ${e.date}</div>
+            ${e.flags.length?`<div style="margin-top:8px;display:flex;gap:4px">${e.flags.map(f=>`<span class="badge badge-red">${f}</span>`).join('')}</div>`:''}
+          </div>
+          <div style="display:flex;gap:8px">
+            <button class="btn btn-secondary btn-sm" onclick="approveExpense('${e.id}')">Approve</button>
+            <button class="btn btn-danger btn-sm" onclick="openRejectModal('${e.id}')">Reject</button>
+          </div>
+        </div>
+      </div>
+    </div>`).join('')}`;
+}
+
+/* ─── MANAGER VIEWS ─── */
+function renderMgrDashboard() {
+  const team = myTeam(); const ex = getExpenses();
+  const pending = ex.filter(e=>(e.status==='pending'||e.status==='flagged')&&team.some(t=>t.id===e.empId));
+  const approved = ex.filter(e=>e.status==='approved'&&team.some(t=>t.id===e.empId));
+  const spend = approved.reduce((a,b)=>a+b.amount,0);
+  return `
+  <div class="page-header fade-in"><h1>Good ${timeOfDay()}, ${CU.name.split(' ')[0]}.</h1><p>${fmtDate(new Date())} · ${CU.dept}</p></div>
+  <div class="stat-row stat-row-4 fade-in d1">
+    <div class="stat-card"><div class="stat-label">Team Members</div><div class="stat-value">${team.length}</div><div class="stat-sub">reporting to you</div></div>
+    <div class="stat-card stat-amber"><div class="stat-label">Pending Review</div><div class="stat-value" style="color:var(--amber-600)">${pending.length}</div><div class="stat-sub">in your queue</div></div>
+    <div class="stat-card stat-green"><div class="stat-label">Team Spend (Approved)</div><div class="stat-value" style="color:var(--green-600)">₹${(spend/1000).toFixed(0)}K</div><div class="stat-sub">${approved.length} expenses</div></div>
+    <div class="stat-card"><div class="stat-label">Avg Decision Time</div><div class="stat-value">3.2h</div><div class="stat-sub">your response time</div></div>
+  </div>
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px" class="fade-in d2">
+    <div style="font-weight:600;font-size:15px">Needs your decision</div>
+    <button class="btn btn-ghost btn-sm" onclick="navigate('mgr-queue')">Full queue →</button>
+  </div>
+  <div class="fade-in d2">
+    ${pending.slice(0,3).map(e=>renderQueueCard(e)).join('')}
+    ${pending.length===0?'<div class="empty-state"><div class="empty-icon">🎉</div><div class="empty-title">All clear!</div><div class="empty-sub">No pending expenses.</div></div>':''}
+  </div>`;
+}
+
+function renderQueueCard(e) {
+  const emp = getUserById(e.empId);
+  const uid = 'qe' + e.id.replace(/\W/g,'');
+  return `
+  <div class="queue-item ${e.risk>70?'high-risk':e.risk>40?'med-risk':''}">
+    <div class="queue-header" onclick="toggleExpand('${uid}')">
+      <div>
+        <div style="font-weight:600;font-size:14px">${emp?.name||'Unknown'} ${e.status==='flagged'?'<span class="badge badge-red" style="margin-left:6px"><span class="badge-dot"></span>AI Flagged</span>':''}</div>
+        <div style="font-size:12px;color:var(--text-secondary);margin-top:2px">${e.cat} · ${e.id} · ${e.date}</div>
+      </div>
+      <div>
+        <div style="font-weight:700;font-size:17px">₹${e.amount.toLocaleString('en-IN')}</div>
+        <div style="font-size:11px;color:var(--text-tertiary);font-family:var(--font-mono)">INR</div>
+      </div>
+      <div class="risk-ring risk-${e.risk>70?'high':e.risk>40?'med':'low'}">
+        <div class="risk-num">${e.risk}</div>
+        <div class="risk-sub">risk</div>
+      </div>
+      <div style="display:flex;gap:6px">
+        <button class="btn btn-success btn-sm" onclick="event.stopPropagation();approveExpense('${e.id}')">Approve</button>
+        <button class="btn btn-danger btn-sm" onclick="event.stopPropagation();openRejectModal('${e.id}')">Reject</button>
+      </div>
+    </div>
+    <div class="queue-expand" id="${uid}">
+      <div class="queue-expand-inner">
+        <div>
+          <div style="font-size:11px;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;font-family:var(--font-mono)">Expense Details</div>
+          <div class="detail-item"><div class="detail-key">Vendor</div><div class="detail-val">${e.vendor}</div></div>
+          <div class="detail-item"><div class="detail-key">Category</div><div class="detail-val">${e.cat}</div></div>
+          <div class="detail-item"><div class="detail-key">Date</div><div class="detail-val">${e.date}</div></div>
+          <div class="detail-item"><div class="detail-key">Submitted</div><div class="detail-val">${e.submitted}</div></div>
+          ${e.note?`<div class="detail-item"><div class="detail-key">Note</div><div class="detail-val" style="font-size:12px;text-align:left;color:var(--text-secondary)">${e.note}</div></div>`:''}
+        </div>
+        <div>
+          <div style="font-size:11px;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;font-family:var(--font-mono)">Employee Info</div>
+          <div class="detail-item"><div class="detail-key">Trust score</div><div class="detail-val" style="color:${(emp?.trust||80)>75?'var(--green-600)':(emp?.trust||80)>50?'var(--amber-600)':'var(--red-600)'}">${emp?.trust||80} / 100</div></div>
+          <div class="detail-item"><div class="detail-key">Risk flags</div><div class="detail-val">${e.flags.length?e.flags.map(f=>`<span class="badge badge-red" style="margin-left:3px">${f}</span>`).join(''):'<span style="color:var(--green-600)">None</span>'}</div></div>
+        </div>
+        <div class="ai-panel">
+          <div class="ai-panel-head">🤖 AI Analysis</div>
+          ${e.risk>70?`
+            <div class="ai-flag-item"><span class="ai-sev ai-sev-high">HIGH</span>Amount significantly above 90-day department average</div>
+            <div class="ai-flag-item"><span class="ai-sev ai-sev-high">HIGH</span>${e.flags.includes('Duplicate')?'Duplicate expense pattern detected':'Anomalous spending behavior'}</div>
+            <div class="ai-flag-item"><span class="ai-sev ai-sev-med">MED</span>${e.flags.includes('Off-hours')?'Submitted during off-hours (2:34 AM)':'Multiple risk signals triggered'}</div>`
+          :e.risk>40?`
+            <div class="ai-flag-item"><span class="ai-sev ai-sev-med">MED</span>${e.flags.includes('Off-hours')?'Off-hours submission detected':'Moderate risk indicators present'}</div>
+            <div class="ai-flag-item"><span class="ai-sev ai-sev-low">LOW</span>Amount slightly above team baseline</div>`
+          :`
+            <div class="ai-flag-item"><span class="ai-sev ai-sev-low">PASS</span>All automated checks passed</div>
+            <div class="ai-flag-item"><span class="ai-sev ai-sev-low">PASS</span>Vendor on approved whitelist</div>`}
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderMgrQueue() {
+  const team = myTeam(); const ex = getExpenses();
+  const queue = CU.role==='admin'
+    ? ex.filter(e=>e.status==='pending'||e.status==='flagged')
+    : ex.filter(e=>(e.status==='pending'||e.status==='flagged')&&team.some(t=>t.id===e.empId));
+  return `
+  <div class="page-header fade-in"><h1>Approval Queue</h1><p>${queue.length} pending · Oldest first</p></div>
+  <div class="fade-in d1">
+    ${queue.map(e=>renderQueueCard(e)).join('')}
+    ${queue.length===0?'<div class="empty-state"><div class="empty-icon">🎉</div><div class="empty-title">All clear!</div><div class="empty-sub">No pending expenses to review.</div></div>':''}
+  </div>`;
+}
+
+function renderMgrHistory() {
+  const team = myTeam(); const ex = getExpenses();
+  const done = ex.filter(e=>(e.status==='approved'||e.status==='rejected')&&(CU.role==='admin'||team.some(t=>t.id===e.empId)));
+  return `
+  <div class="page-header fade-in"><h1>Decision History</h1><p>${done.length} reviewed expenses</p></div>
+  <div class="card fade-in d1">
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead><tr><th>ID</th><th>Employee</th><th>Vendor</th><th>Amount</th><th>Decision</th><th>Date</th></tr></thead>
+        <tbody>
+          ${done.map(e=>`
+            <tr onclick="openDrawer('${e.id}')">
+              <td style="font-family:var(--font-mono);font-size:11.5px;color:var(--text-secondary)">${e.id}</td>
+              <td style="font-weight:600">${userName(e.empId)}</td>
+              <td>${e.vendor}</td>
+              <td style="font-family:var(--font-mono);font-weight:600">₹${e.amount.toLocaleString('en-IN')}</td>
+              <td>${statusBadge(e.status)}</td>
+              <td style="font-family:var(--font-mono);font-size:12px;color:var(--text-secondary)">${e.date}</td>
+            </tr>`).join('')}
+          ${done.length===0?'<tr><td colspan="6" style="text-align:center;padding:40px;color:var(--text-secondary)">No decisions yet</td></tr>':''}
+        </tbody>
+      </table>
+    </div>
+  </div>`;
+}
+
+function renderMgrTeam() {
+  const team = myTeam(); const ex = getExpenses();
+  return `
+  <div class="page-header fade-in"><h1>My Team</h1><p>${CU.dept} · ${team.length} members</p></div>
+  ${team.length===0?'<div class="empty-state fade-in"><div class="empty-icon">👥</div><div class="empty-title">No team members</div><div class="empty-sub">Ask admin to assign employees to you.</div></div>':''}
+  <div class="card fade-in d1">
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead><tr><th>Member</th><th>Spend (Approved)</th><th>Submissions</th><th>Trust Score</th><th>Standing</th></tr></thead>
+        <tbody>
+          ${team.map(m=>{
+            const me=ex.filter(e=>e.empId===m.id);
+            const spend=me.filter(e=>e.status==='approved').reduce((a,b)=>a+b.amount,0);
+            return `<tr>
+              <td><div style="display:flex;align-items:center;gap:9px"><div class="user-av" style="width:30px;height:30px;font-size:11px;background:${m.color}22;color:${m.color}">${m.initials}</div><div><div style="font-weight:600">${m.name}</div><div style="font-size:11.5px;color:var(--text-secondary)">${m.dept}</div></div></div></td>
+              <td style="font-family:var(--font-mono)">₹${(spend/1000).toFixed(1)}K</td>
+              <td style="font-family:var(--font-mono)">${me.length}</td>
+              <td><span style="font-family:var(--font-mono);font-weight:700;font-size:15px;color:${m.trust>80?'var(--green-600)':m.trust>60?'var(--amber-600)':'var(--red-600)'}">${m.trust||80}</span></td>
+              <td>${me.filter(e=>e.status==='pending').length>0?'<span class="badge badge-amber"><span class="badge-dot"></span>Pending</span>':'<span class="badge badge-green"><span class="badge-dot"></span>Good</span>'}</td>
+            </tr>`;}).join('')}
+        </tbody>
+      </table>
+    </div>
+  </div>`;
+}
+
+function renderMgrSettings() {
+  return `
+  <div class="page-header fade-in"><h1>Workflow Rules</h1><p>Customize approval routing for your team</p></div>
+  <div class="card fade-in d1" style="margin-bottom:14px">
+    <div class="card-header"><div class="card-title">Auto-Approval Settings</div><button class="btn btn-primary btn-sm" onclick="showToast('success','✓','Settings saved')">Save</button></div>
+    <div class="settings-item"><div><div style="font-weight:500">Enable auto-approval</div><div style="font-size:12.5px;color:var(--text-secondary)">Low-risk, low-amount expenses skip the queue</div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+    <div class="settings-item"><div><div style="font-weight:500">Auto-approve threshold</div><div style="font-size:12.5px;color:var(--text-secondary)">Expenses under this with risk &lt; 30 are auto-approved</div></div><select class="form-input form-select" style="width:110px"><option>₹5,000</option><option selected>₹10,000</option><option>₹25,000</option></select></div>
+  </div>
+  <div class="card fade-in d2" style="margin-bottom:14px">
+    <div class="card-header"><div class="card-title">Escalation Rules</div></div>
+    <div class="settings-item"><div><div style="font-weight:500">High-risk escalation</div><div style="font-size:12.5px;color:var(--text-secondary)">Risk &gt; 70 → Finance Director</div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+    <div class="settings-item"><div><div style="font-weight:500">Large amount escalation</div><div style="font-size:12.5px;color:var(--text-secondary)">Above this requires Director sign-off</div></div><select class="form-input form-select" style="width:110px"><option>₹50,000</option><option selected>₹1,00,000</option></select></div>
+  </div>
+  <div class="card fade-in d3">
+    <div class="card-header"><div class="card-title">Notifications</div></div>
+    <div class="settings-item"><div><div style="font-weight:500">New submission alerts</div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+    <div class="settings-item"><div><div style="font-weight:500">Escalation reminders</div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+    <div class="settings-item"><div><div style="font-weight:500">Fraud alerts</div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+  </div>`;
+}
+
+/* ─── EMPLOYEE VIEWS ─── */
+function renderEmpHome() {
+  const myEx = getExpenses().filter(e=>e.empId===CU.id);
+  const pending  = myEx.filter(e=>e.status==='pending');
+  const approved = myEx.filter(e=>e.status==='approved');
+  const rejected = myEx.filter(e=>e.status==='rejected');
+  const trust = CU.trust||80;
+  return `
+  <div class="page-header fade-in"><h1>Good ${timeOfDay()}, ${CU.name.split(' ')[0]}.</h1><p>${fmtDate(new Date())} · ${CU.dept}</p></div>
+  <div class="stat-row stat-row-4 fade-in d1">
+    <div class="stat-card"><div class="stat-label">Total Submitted</div><div class="stat-value">${myEx.length}</div><div class="stat-sub">all time</div></div>
+    <div class="stat-card stat-green"><div class="stat-label">Approved</div><div class="stat-value" style="color:var(--green-600)">${approved.length}</div><div class="stat-sub">₹${(approved.reduce((a,b)=>a+b.amount,0)/1000).toFixed(0)}K total</div></div>
+    <div class="stat-card stat-amber"><div class="stat-label">Pending</div><div class="stat-value" style="color:var(--amber-600)">${pending.length}</div><div class="stat-sub">awaiting review</div></div>
+    <div class="stat-card ${trust>75?'stat-green':trust>50?'stat-amber':'stat-red'}"><div class="stat-label">Trust Score</div><div class="stat-value" style="color:${trust>75?'var(--green-600)':trust>50?'var(--amber-600)':'var(--red-600)'}">${trust}</div><div class="stat-sub">${trust>75?'High · Auto-eligible':trust>50?'Medium':'Needs improvement'}</div></div>
+  </div>
+  ${rejected.length>0?`
+    <div style="background:var(--red-50);border:1px solid #fecdca;border-left:3px solid var(--red-500);border-radius:var(--r-lg);padding:13px 16px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between" class="fade-in d1">
+      <div><div style="font-weight:600;font-size:13.5px;color:var(--red-700)">⚠ ${rejected.length} expense${rejected.length>1?'s were':' was'} rejected</div><div style="font-size:12.5px;color:var(--red-600);margin-top:2px">Review the rejection reason and resubmit with corrections.</div></div>
+      <button class="btn btn-danger btn-sm" onclick="navigate('emp-expenses')">View rejected</button>
+    </div>`:''}
+  <div class="fade-in d2">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+      <div style="font-weight:600;font-size:15px">Recent submissions</div>
+      <button class="btn btn-ghost btn-sm" onclick="navigate('emp-expenses')">View all →</button>
+    </div>
+    <div class="card">
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead><tr><th>Merchant</th><th>Amount</th><th>Date</th><th>Status</th><th>Risk</th></tr></thead>
+          <tbody>
+            ${myEx.slice(0,6).map(e=>`
+              <tr onclick="openDrawer('${e.id}')">
+                <td><div style="font-weight:600">${e.vendor}</div><div style="font-size:11.5px;color:var(--text-secondary)">${e.cat} · ${e.id}</div></td>
+                <td style="font-family:var(--font-mono);font-weight:600">₹${e.amount.toLocaleString('en-IN')}</td>
+                <td style="font-family:var(--font-mono);font-size:12px;color:var(--text-secondary)">${e.date}</td>
+                <td>${statusBadge(e.status)}</td>
+                <td><span style="font-family:var(--font-mono);font-weight:700;color:${riskColor(e.risk)}">${e.risk}</span></td>
+              </tr>`).join('')}
+            ${myEx.length===0?'<tr><td colspan="5" style="text-align:center;padding:36px;color:var(--text-secondary)">No expenses yet. <button class="btn btn-ghost btn-sm" onclick="navigate(\'emp-submit\')">Submit one →</button></td></tr>':''}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderEmpNotifs() {
+  const notifs = myNotifs();
+  const all = DB.get('notifs')||{};
+  all[CU.id] = (all[CU.id]||[]).map(n=>({...n,read:true}));
+  DB.set('notifs', all);
+  return `
+  <div class="page-header fade-in"><h1>Notifications</h1><p>${notifs.filter(n=>!n.read).length} unread</p></div>
+  <div class="card fade-in d1">
+    ${notifs.length===0?'<div class="empty-state" style="padding:48px"><div class="empty-icon">🔔</div><div class="empty-sub">No notifications yet.</div></div>':''}
+    ${notifs.map(n=>`
+      <div style="display:flex;gap:14px;padding:14px 20px;border-bottom:1px solid var(--border-subtle);align-items:flex-start">
+        <div style="width:7px;height:7px;border-radius:50%;background:${n.read?'var(--gray-300)':'var(--brand)'};margin-top:5px;flex-shrink:0"></div>
+        <div>
+          <div style="font-weight:600;font-size:13.5px;margin-bottom:2px">${n.title}</div>
+          <div style="font-size:13px;color:var(--text-secondary);line-height:1.5">${n.desc}</div>
+          <div style="font-size:11px;color:var(--text-tertiary);font-family:var(--font-mono);margin-top:5px">${n.time}</div>
+        </div>
+      </div>`).join('')}
+  </div>`;
+}
+
+function renderEmpSubmit() {
+  const cats = ['Travel','Hotel','Meals & Entertainment','Transport','Software','Office Supplies','Conference','Other'];
+  const mgr = getUserById(CU.managerId);
+  return `
+  <div class="page-header fade-in"><h1>New Expense</h1><p>AI analyzes your expense and predicts approval before you submit.</p></div>
+  <div style="display:grid;grid-template-columns:1fr 296px;gap:16px" class="fade-in d1">
+    <div>
+      <div class="card" style="margin-bottom:14px">
+        <div class="card-header"><div class="card-title">Expense Details</div></div>
+        <div class="card-body">
+          <div class="form-row" style="margin-bottom:14px">
+            <div class="form-group" style="margin-bottom:0">
+              <label class="form-label">Category</label>
+              <select class="form-input form-select" id="ec-cat" onchange="updateRisk()">${cats.map(c=>`<option>${c}</option>`).join('')}</select>
+            </div>
+            <div class="form-group" style="margin-bottom:0">
+              <label class="form-label">Amount (₹)</label>
+              <input class="form-input" id="ec-amt" type="number" placeholder="0.00" min="0" oninput="updateRisk()">
+            </div>
+          </div>
+          <div class="form-row" style="margin-bottom:14px">
+            <div class="form-group" style="margin-bottom:0">
+              <label class="form-label">Vendor / Merchant</label>
+              <input class="form-input" id="ec-vendor" placeholder="e.g. IndiGo Airlines" oninput="updateRisk()">
+            </div>
+            <div class="form-group" style="margin-bottom:0">
+              <label class="form-label">Date of Expense</label>
+              <input class="form-input" id="ec-date" type="date" value="${new Date().toISOString().split('T')[0]}">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Business Purpose</label>
+            <textarea class="form-input form-textarea" id="ec-desc" placeholder="Describe the business reason for this expense"></textarea>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-title">Receipt</div><span style="font-size:11.5px;color:var(--text-secondary);font-family:var(--font-mono)">OCR auto-extract</span></div>
+        <div class="card-body">
+          <div class="upload-zone" onclick="simulateOCR()">
+            <div class="upload-icon">📎</div>
+            <div class="upload-title">Upload receipt</div>
+            <div class="upload-sub">PDF · JPG · PNG · Max 10MB · Click to upload</div>
+          </div>
+          <div id="ocr-result" style="display:none">
+            <div class="ocr-card">
+              <div class="ocr-head"><div class="ocr-head-title">✓ OCR Extracted</div><span style="font-size:11px;font-family:var(--font-mono);color:var(--green-600)" id="ocr-conf">94.7%</span></div>
+              <div id="ocr-fields"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="position:sticky;top:68px">
+      <div class="card" style="margin-bottom:10px">
+        <div class="card-header">
+          <div class="card-title">AI Analysis</div>
+          <span style="font-size:10px;font-family:var(--font-mono);padding:2px 7px;border-radius:3px;background:var(--blue-50);color:var(--brand);border:1px solid var(--brand-border)">LIVE</span>
+        </div>
+        <div class="risk-big-wrap">
+          <div id="risk-big-num" class="risk-big-num" style="color:var(--gray-300)">—</div>
+          <div id="risk-big-label" class="risk-big-label">Enter details to analyze</div>
+        </div>
+        <div style="padding:14px 16px;border-bottom:1px solid var(--border-subtle)" id="risk-factors-wrap">
+          <div style="font-size:12px;color:var(--text-tertiary);text-align:center;padding:6px">Fill in the form above</div>
+        </div>
+        <div style="padding:12px 16px;border-bottom:1px solid var(--border-subtle);display:flex;align-items:center;justify-content:space-between">
+          <div style="font-size:12.5px;color:var(--text-secondary)">Approval probability</div>
+          <div id="approval-prob" style="font-weight:700;font-size:15px;color:var(--text-tertiary)">—</div>
+        </div>
+        <div style="padding:12px 16px">
+          <div style="font-size:11px;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;font-family:var(--font-mono)">Approval Route</div>
+          <div class="flow-wrap">
+            <div class="flow-step done">
+              <div class="flow-node">✓</div>
+              <div><div class="flow-step-name">You</div><div class="flow-step-sub">Submitted</div></div>
+            </div>
+            <div class="flow-line"></div>
+            <div class="flow-step active">
+              <div class="flow-node">2</div>
+              <div><div class="flow-step-name">Manager</div><div class="flow-step-sub">${mgr?.name||'Your manager'}</div></div>
+            </div>
+            <div class="flow-line"></div>
+            <div class="flow-step">
+              <div class="flow-node">✓</div>
+              <div><div class="flow-step-name">Done</div><div class="flow-step-sub">Reimbursed</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <button class="btn btn-primary btn-full" style="padding:11px" id="submit-btn" onclick="submitExpense(this)">Submit Expense →</button>
+      <div style="font-size:11.5px;color:var(--text-tertiary);text-align:center;margin-top:7px;font-family:var(--font-mono)">Trust ${CU.trust||80} · ${(CU.trust||80)>=75?'Expedited review':'Standard review'}</div>
+    </div>
+  </div>`;
+}
+
+function renderEmpExpenses() {
+  const myEx = getExpenses().filter(e=>e.empId===CU.id);
+  const approved = myEx.filter(e=>e.status==='approved');
+  return `
+  <div class="page-header fade-in"><h1>My Expenses</h1><p>${myEx.length} submissions · ₹${(approved.reduce((a,b)=>a+b.amount,0)/1000).toFixed(0)}K approved</p></div>
+  <div style="display:flex;gap:8px;margin-bottom:14px" class="fade-in d1">
+    <input class="form-input" id="mex-q" style="max-width:220px" placeholder="Search…" oninput="filterMyExp()">
+    <select class="form-input form-select" id="mex-sf" style="width:120px" onchange="filterMyExp()">
+      <option value="">All Status</option>
+      <option value="pending">Pending</option><option value="approved">Approved</option>
+      <option value="rejected">Rejected</option><option value="flagged">Flagged</option>
+    </select>
+  </div>
+  <div class="card fade-in d2">
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead><tr><th>Merchant</th><th>Amount</th><th>Date</th><th>Status</th><th>Risk</th><th>Actions</th></tr></thead>
+        <tbody id="mex-tbody">${renderMyExpRows(myEx)}</tbody>
+      </table>
+    </div>
+  </div>`;
+}
+
+function renderMyExpRows(exps) {
+  return exps.map(e=>`
+    <tr>
+      <td onclick="openDrawer('${e.id}')" style="cursor:pointer"><div style="font-weight:600">${e.vendor}</div><div style="font-size:11.5px;color:var(--text-secondary)">${e.cat} · ${e.id}</div></td>
+      <td style="font-family:var(--font-mono);font-weight:600">₹${e.amount.toLocaleString('en-IN')}</td>
+      <td style="font-family:var(--font-mono);font-size:12px;color:var(--text-secondary)">${e.date}</td>
+      <td>${statusBadge(e.status)}</td>
+      <td><span style="font-family:var(--font-mono);font-weight:700;color:${riskColor(e.risk)}">${e.risk}</span></td>
+      <td>
+        <div style="display:flex;gap:4px">
+          <button class="btn btn-ghost btn-xs" onclick="openDrawer('${e.id}')">View</button>
+          ${e.status==='pending'?`<button class="btn btn-ghost btn-xs" onclick="openEditExpense('${e.id}')">Edit</button><button class="btn btn-ghost btn-xs" style="color:var(--red-600)" onclick="deleteExpense('${e.id}')">Del</button>`:''}
+        </div>
+      </td>
+    </tr>`).join('') || '<tr><td colspan="6" style="text-align:center;padding:36px;color:var(--text-secondary)">No expenses found</td></tr>';
+}
+
+function filterMyExp() {
+  const q  = (document.getElementById('mex-q')?.value||'').toLowerCase();
+  const sf = document.getElementById('mex-sf')?.value||'';
+  let e = getExpenses().filter(x=>x.empId===CU.id);
+  if (q)  e=e.filter(x=>x.vendor.toLowerCase().includes(q)||x.cat.toLowerCase().includes(q)||x.id.toLowerCase().includes(q));
+  if (sf) e=e.filter(x=>x.status===sf);
+  const tb=document.getElementById('mex-tbody'); if(tb) tb.innerHTML=renderMyExpRows(e);
+}
+
+function renderEmpTrust() {
+  const trust = CU.trust||80;
+  const myEx = getExpenses().filter(e=>e.empId===CU.id);
+  const approvalRate = myEx.length>0?Math.round(myEx.filter(e=>e.status==='approved').length/myEx.length*100):100;
+  const rejRate = myEx.length>0?Math.round(myEx.filter(e=>e.status==='rejected').length/myEx.length*100):0;
+  const flagRate = myEx.length>0?Math.round(myEx.filter(e=>e.flags.length>0).length/myEx.length*100):0;
+  const tc = trust>75?'var(--green-600)':trust>50?'var(--amber-600)':'var(--red-600)';
+  return `
+  <div class="page-header fade-in"><h1>Trust Score</h1><p>Updated daily · Based on your submission history</p></div>
+  <div style="background:var(--white);border:1px solid var(--border);border-radius:var(--r-xl);padding:28px;margin-bottom:16px;display:flex;align-items:flex-start;justify-content:space-between;box-shadow:var(--shadow-sm)" class="fade-in d1">
+    <div>
+      <div class="trust-big" style="color:${tc}">${trust}</div>
+      <div style="font-size:12px;color:var(--text-secondary);margin-top:6px">out of 100 · ${trust>75?'High trust — expedited review eligible':trust>50?'Medium trust — standard review':'Low trust — requires full review chain'}</div>
+      <div style="margin-top:22px">
+        ${[{l:'Approval rate',v:approvalRate},{l:'Policy compliance',v:100-rejRate},{l:'Clean submissions',v:100-flagRate},{l:'On-time submission',v:85}].map(r=>`
+          <div class="factor-row">
+            <div class="factor-label">${r.l}</div>
+            <div style="flex:1"><div class="prog"><div class="prog-fill prog-blue" style="width:${r.v}%"></div></div></div>
+            <div class="factor-val">${r.v}%</div>
+          </div>`).join('')}
+      </div>
+    </div>
+    <div style="text-align:right;margin-left:24px">
+      <div style="font-size:11.5px;font-weight:500;color:var(--text-secondary);margin-bottom:6px">YOUR BENEFIT</div>
+      <div style="font-size:16px;font-weight:700">${trust>=75?'1-Step Approval':'Standard Flow'}</div>
+      <div style="font-size:13px;color:var(--text-secondary)">${trust>=75?'Under ₹50K → Manager only':'Full approval chain required'}</div>
+    </div>
+  </div>
+  <div class="card fade-in d2">
+    <div class="card-header"><div class="card-title">How to improve your score</div></div>
+    <div class="card-body">
+      <div style="display:flex;flex-direction:column;gap:10px">
+        ${['Always attach receipts at time of submission','Keep meal expenses under ₹2,500 per person','Submit within 7 days of the expense date','Add clear, specific business purpose descriptions','Avoid off-hours submissions (preferred: 8AM–10PM)'].map(tip=>`
+          <div style="display:flex;align-items:flex-start;gap:10px;font-size:13.5px;color:var(--text-secondary)">
+            <span style="color:var(--green-600);font-weight:700;flex-shrink:0">→</span>${tip}
+          </div>`).join('')}
+      </div>
+    </div>
+  </div>`;
+}
+
+/* ══════════ AI RISK ENGINE ══════════ */
+function updateRisk() {
+  const amount = parseFloat(document.getElementById('ec-amt')?.value)||0;
+  const cat    = document.getElementById('ec-cat')?.value||'';
+  const vendor = document.getElementById('ec-vendor')?.value||'';
+  const bigNum = document.getElementById('risk-big-num');
+  const bigLbl = document.getElementById('risk-big-label');
+  const fWrap  = document.getElementById('risk-factors-wrap');
+  const probEl = document.getElementById('approval-prob');
+  if (!amount) {
+    if (bigNum) { bigNum.textContent='—'; bigNum.style.color='var(--gray-300)'; }
+    if (bigLbl) bigLbl.textContent='Enter details to analyze';
+    if (fWrap)  fWrap.innerHTML='<div style="font-size:12px;color:var(--text-tertiary);text-align:center;padding:6px">Fill in the form above</div>';
+    if (probEl) { probEl.textContent='—'; probEl.style.color='var(--text-tertiary)'; }
+    return;
+  }
+  // Scoring
+  let risk=10; let factors=[];
+  if (amount>100000)      { risk+=35; factors.push({n:'Amount vs policy',v:12,sev:'high',t:'Exceeds ₹1L — executive sign-off required'}); }
+  else if (amount>50000)  { risk+=20; factors.push({n:'Amount vs policy',v:38,sev:'med', t:'Above normal approval threshold'}); }
+  else if (amount>20000)  { risk+=10; factors.push({n:'Amount vs policy',v:60,sev:'low', t:'Moderate — within normal range'}); }
+  else                    {           factors.push({n:'Amount vs policy',v:88,sev:'low', t:'Well within policy limits'}); }
+
+  const hiCats=['Hotel','Conference'];
+  if (hiCats.includes(cat)) { risk+=8; factors.push({n:'Category risk',v:52,sev:'med',t:`${cat} requires itemized receipt`}); }
+  else { factors.push({n:'Category risk',v:85,sev:'low',t:'Standard category'}); }
+
+  const knownV=['indigo','air india','oyo','taj','zomato','swiggy','uber','ola','figma','notion','slack','zoom','microsoft','google','amazon'];
+  const isKnown = vendor && knownV.some(v=>vendor.toLowerCase().includes(v));
+  if (vendor && !isKnown && vendor.length>2) { risk+=8; factors.push({n:'Vendor',v:42,sev:'med',t:'First-time vendor — needs verification'}); }
+  else { factors.push({n:'Vendor',v:isKnown?92:72,sev:'low',t:isKnown?'Known trusted vendor':'Provide vendor details'}); }
+
+  const h=new Date().getHours();
+  if (h<8||h>22) { risk+=12; factors.push({n:'Submission time',v:22,sev:'high',t:'Off-hours submission'}); }
+  else { factors.push({n:'Submission time',v:94,sev:'low',t:'Normal business hours'}); }
+
+  const trust=CU.trust||80;
+  if (trust<50) risk+=15; else if (trust>80) risk=Math.max(risk-8,5);
+  factors.push({n:'Employee trust',v:trust,sev:trust>75?'low':trust>50?'med':'high',t:`Trust score ${trust}/100`});
+
+  risk=Math.min(Math.max(Math.round(risk),5),99);
+  const prob=Math.max(10,100-risk);
+
+  if (bigNum) { bigNum.textContent=risk; bigNum.style.color=riskColor(risk); }
+  if (bigLbl) bigLbl.textContent=`Risk Score · ${risk>70?'High — review required':risk>40?'Medium':'Low — likely approved'}`;
+  if (fWrap)  fWrap.innerHTML=factors.map(f=>`
+    <div class="factor-row">
+      <div class="factor-label">${f.n}</div>
+      <div style="flex:1"><div class="prog"><div class="prog-fill ${f.sev==='high'?'prog-red':f.sev==='med'?'prog-amber':'prog-blue'}" style="width:${f.v}%"></div></div></div>
+      <div class="factor-val" title="${f.t}">${f.v}</div>
+    </div>`).join('');
+  if (probEl) { probEl.textContent=prob+'%'; probEl.style.color=prob>70?'var(--green-600)':prob>40?'var(--amber-600)':'var(--red-600)'; }
+}
+
+function simulateOCR() {
+  const vendors=['IndiGo Airlines Pvt Ltd','Taj Hotels Ltd','Zomato Food India','Uber India','Figma Inc','Notion Labs','OYO Rooms India'];
+  const amounts=[42500,8200,3400,1200,11900,8400,5600];
+  const idx=Math.floor(Math.random()*vendors.length);
+  const vendor=vendors[idx]; const amount=amounts[idx];
+  const conf=(93+Math.floor(Math.random()*6)).toFixed(1);
+  document.getElementById('ocr-result').style.display='block';
+  document.getElementById('ocr-conf').textContent=conf+'%';
+  document.getElementById('ocr-fields').innerHTML=`
+    <div class="ocr-row"><span class="ocr-key">Amount</span><span class="ocr-val">₹${amount.toLocaleString('en-IN')}.00</span></div>
+    <div class="ocr-row"><span class="ocr-key">Date</span><span class="ocr-val">${fmtDate(new Date())}</span></div>
+    <div class="ocr-row"><span class="ocr-key">Vendor</span><span class="ocr-val">${vendor}</span></div>
+    <div class="ocr-row"><span class="ocr-key">GST No.</span><span class="ocr-val">27AAB${Math.random().toString(36).substring(2,8).toUpperCase()}1Z5</span></div>`;
+  const vi=document.getElementById('ec-vendor'); if(vi) vi.value=vendor;
+  const ai=document.getElementById('ec-amt');   if(ai) ai.value=amount;
+  updateRisk();
+  showToast('success','🔍','OCR extracted receipt data');
+}
+
+function submitExpense(btn) {
+  const amount=parseFloat(document.getElementById('ec-amt')?.value)||0;
+  const cat   =document.getElementById('ec-cat')?.value||'';
+  const vendor=document.getElementById('ec-vendor')?.value.trim()||'';
+  const date  =document.getElementById('ec-date')?.value||new Date().toISOString().split('T')[0];
+  const desc  =document.getElementById('ec-desc')?.value.trim()||'';
+  if (!amount||amount<=0) return showToast('danger','!','Please enter a valid amount.');
+  if (!vendor)            return showToast('danger','!','Please enter the vendor name.');
+  btn.textContent='Submitting…'; btn.disabled=true;
+
+  let risk=10; const flags=[];
+  if (amount>100000) risk+=35; else if (amount>50000) risk+=20; else if (amount>20000) risk+=10;
+  const h=new Date().getHours();
+  if (h<8||h>22) { risk+=12; flags.push('Off-hours'); }
+  if (amount>100000) flags.push('High amount');
+  const kV=['indigo','air india','oyo','taj','zomato','uber','figma','notion','slack'];
+  if (!kV.some(v=>vendor.toLowerCase().includes(v))) risk+=8;
+  if (CU.trust<50) risk+=15; else if (CU.trust>80) risk=Math.max(risk-8,5);
+  risk=Math.min(Math.max(Math.round(risk),5),99);
+
+  const expenses=getExpenses();
+  const nid=DB.get('nExpId')||1050;
+  DB.set('nExpId',nid+1);
+  const newE = {
+    id:'EX-'+nid, empId:CU.id, dept:CU.dept, cat, vendor, amount, currency:'INR',
+    date:new Date(date).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'}),
+    submitted:new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'}),
+    status:risk>65?'flagged':'pending', risk, flags, note:desc, approvedBy:null, comments:[]
+  };
+  expenses.unshift(newE);
+  saveExpenses(expenses);
+  addAudit(`<b>${CU.name}</b> submitted ${newE.id} — ₹${amount.toLocaleString('en-IN')} · ${cat} · ${vendor}`);
+  pushNotif(CU.id,`${newE.id} submitted`,`Your ${cat} expense for ₹${amount.toLocaleString('en-IN')} at ${vendor} is pending review.`);
+  if (CU.managerId) pushNotif(CU.managerId,`New expense from ${CU.name}`,`${newE.id} — ₹${amount.toLocaleString('en-IN')} · ${cat} requires your review.`);
+
+  setTimeout(()=>{ showToast('success','✓',`${newE.id} submitted — pending manager review.`); navigate('emp-expenses'); },600);
+}
+
+/* ══════════ EXPENSE CRUD ══════════ */
+function approveExpense(id) {
+  const ex=getExpenses(); const e=ex.find(x=>x.id===id); if(!e) return;
+  e.status='approved'; e.approvedBy=CU.id;
+  saveExpenses(ex);
+  addAudit(`<b>${CU.name}</b> approved ${id} — ₹${e.amount.toLocaleString('en-IN')} · ${userName(e.empId)}`);
+  pushNotif(e.empId,`${id} approved ✓`,`Your ${e.cat} expense of ₹${e.amount.toLocaleString('en-IN')} at ${e.vendor} was approved by ${CU.name}. Reimbursement in 2–3 business days.`);
+  bumpTrust(e.empId,1);
+  showToast('success','✓',`${id} approved`);
+  navigate(curPage);
+}
+
+function openRejectModal(id) {
+  const e=getExpenses().find(x=>x.id===id);
+  openModal(`
+    <div class="modal-title">Reject ${id}</div>
+    <div class="modal-sub">Provide a reason so the employee can resubmit correctly.</div>
+    <div style="padding:10px 14px;background:var(--gray-50);border:1px solid var(--border);border-radius:8px;margin-bottom:14px;font-size:13px;color:var(--text-secondary)">
+      ₹${e?.amount?.toLocaleString('en-IN')} · ${e?.vendor} · ${e?.cat}
+    </div>
+    <div class="form-group">
+      <label class="form-label">Rejection Reason</label>
+      <textarea class="form-input form-textarea" id="reject-reason" placeholder="e.g. Amount exceeds per-person meal policy. Please attach an itemized receipt and resubmit."></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-danger" onclick="confirmReject('${id}')">Reject Expense</button>
+    </div>`);
+}
+
+function confirmReject(id) {
+  const reason=(document.getElementById('reject-reason')?.value||'').trim()||'Policy violation';
+  const ex=getExpenses(); const e=ex.find(x=>x.id===id); if(!e) return;
+  e.status='rejected'; e.comments=e.comments||[]; e.comments.push({author:CU.name,text:reason,time:nowStr()});
+  saveExpenses(ex);
+  addAudit(`<b>${CU.name}</b> rejected ${id} — ${reason}`);
+  pushNotif(e.empId,`${id} rejected`,`Your ${e.cat} expense of ₹${e.amount.toLocaleString('en-IN')} was rejected. Reason: ${reason}`);
+  bumpTrust(e.empId,-2);
+  closeModal();
+  showToast('danger','✗',`${id} rejected`);
+  navigate(curPage);
+}
+
+function deleteExpense(id) {
+  if (!confirm(`Delete expense ${id}? This cannot be undone.`)) return;
+  saveExpenses(getExpenses().filter(e=>e.id!==id));
+  addAudit(`<b>${CU.name}</b> deleted expense ${id}`);
+  showToast('success','🗑','Expense deleted');
+  navigate(curPage);
+}
+
+function openEditExpense(id) {
+  const e=getExpenses().find(x=>x.id===id); if(!e) return;
+  const cats=['Travel','Hotel','Meals & Entertainment','Transport','Software','Office Supplies','Conference','Other'];
+  openModal(`
+    <div class="modal-title">Edit ${id}</div>
+    <div class="modal-sub">Pending expenses can be edited before review.</div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Category</label><select class="form-input form-select" id="ee-cat">${cats.map(c=>`<option ${c===e.cat?'selected':''}>${c}</option>`).join('')}</select></div>
+      <div class="form-group"><label class="form-label">Amount (₹)</label><input class="form-input" type="number" id="ee-amt" value="${e.amount}"></div>
+    </div>
+    <div class="form-group"><label class="form-label">Vendor</label><input class="form-input" id="ee-vendor" value="${e.vendor}"></div>
+    <div class="form-group"><label class="form-label">Business Purpose</label><textarea class="form-input form-textarea" id="ee-note">${e.note||''}</textarea></div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveEditExp('${id}')">Save Changes</button>
+    </div>`);
+}
+
+function saveEditExp(id) {
+  const ex=getExpenses(); const e=ex.find(x=>x.id===id); if(!e) return;
+  e.cat    = document.getElementById('ee-cat').value;
+  e.amount = parseFloat(document.getElementById('ee-amt').value)||e.amount;
+  e.vendor = document.getElementById('ee-vendor').value.trim()||e.vendor;
+  e.note   = document.getElementById('ee-note').value.trim();
+  saveExpenses(ex);
+  addAudit(`<b>${CU.name}</b> edited ${id}`);
+  closeModal(); showToast('success','✓','Expense updated'); navigate(curPage);
+}
+
+/* ══════════ USER CRUD ══════════ */
+function openAddUserModal() {
+  const managers = getUsers().filter(u=>u.role==='manager'||u.role==='admin');
+  openModal(`
+    <div class="modal-title">Add New User</div>
+    <div class="modal-sub">Create account directly or send an invite link.</div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Full Name</label><input class="form-input" id="nu-name" placeholder="Full Name"></div>
+      <div class="form-group"><label class="form-label">Email</label><input class="form-input" id="nu-email" type="email" placeholder="email@company.com"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Role</label>
+        <select class="form-input form-select" id="nu-role">
+          <option value="employee">Employee</option><option value="manager">Manager</option>
+          <option value="executive">Executive</option><option value="admin">Admin</option>
+        </select>
+      </div>
+      <div class="form-group"><label class="form-label">Department</label><input class="form-input" id="nu-dept" placeholder="Engineering"></div>
+    </div>
+    <div class="form-group"><label class="form-label">Reports To</label>
+      <select class="form-input form-select" id="nu-mgr">
+        <option value="">None</option>
+        ${managers.map(m=>`<option value="${m.id}">${m.name} (${m.role})</option>`).join('')}
+      </select>
+    </div>
+    <div style="background:var(--gray-50);border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:14px">
+      <div style="font-size:12.5px;font-weight:600;margin-bottom:8px">Account creation method</div>
+      <div style="display:flex;gap:16px">
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13.5px"><input type="radio" name="nu-method" value="direct" checked onchange="toggleNewPwd()"> Direct (set password)</label>
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13.5px"><input type="radio" name="nu-method" value="invite" onchange="toggleNewPwd()"> Send invite link</label>
+      </div>
+    </div>
+    <div id="nu-pwd-wrap" class="form-group"><label class="form-label">Initial Password</label><input class="form-input" type="password" id="nu-pwd" placeholder="Set password"></div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="createUser()">Create User</button>
+    </div>`);
+}
+
+function toggleNewPwd() {
+  const m=document.querySelector('input[name="nu-method"]:checked')?.value||'direct';
+  const el=document.getElementById('nu-pwd-wrap'); if(el) el.style.display=m==='invite'?'none':'';
+}
+
+function createUser() {
+  const name  =document.getElementById('nu-name').value.trim();
+  const email =document.getElementById('nu-email').value.trim().toLowerCase();
+  const role  =document.getElementById('nu-role').value;
+  const dept  =document.getElementById('nu-dept').value.trim();
+  const mgrId =parseInt(document.getElementById('nu-mgr').value)||null;
+  const method=(document.querySelector('input[name="nu-method"]:checked')?.value)||'direct';
+  const pwd   =document.getElementById('nu-pwd')?.value||'';
+  if (!name||!email)             return showToast('danger','!','Name and email are required.');
+  if (getUsers().find(u=>u.email.toLowerCase()===email)) return showToast('danger','!','Email already exists.');
+  if (method==='direct'&&!pwd)   return showToast('danger','!','Password required for direct creation.');
+
+  if (method==='invite') {
+    const token=Math.random().toString(36).substring(2,16)+Date.now().toString(36);
+    const invites=getInvites();
+    invites.push({token,email,role,dept,managerId:mgrId,invitedBy:CU.name,used:false,createdAt:new Date().toISOString()});
+    DB.set('invites',invites);
+    const nid=DB.get('nUserId')||8;
+    const users=getUsers();
+    users.push({id:nid,name:email.split('@')[0],email,pwd:'',role,dept:dept||'General',initials:email.substring(0,2).toUpperCase(),color:randColor(),status:'invited',trust:80,managerId:mgrId,joined:fmtDate(new Date())});
+    DB.set('nUserId',nid+1); saveUsers(users);
+    addAudit(`<b>${CU.name}</b> invited ${email} as ${role}`);
+    closeModal(); showToast('success','📧',`Invite link created for ${email}`); navigate('admin-users'); return;
+  }
+  const nid=DB.get('nUserId')||8; const users=getUsers();
+  users.push({id:nid,name,email,pwd,role,dept:dept||'General',initials:inits(name),color:randColor(),status:'active',trust:80,managerId:mgrId,joined:fmtDate(new Date())});
+  DB.set('nUserId',nid+1); saveUsers(users);
+  addAudit(`<b>${CU.name}</b> created account for ${name} (${role})`);
+  closeModal(); showToast('success','✓',`User ${name} created`); navigate('admin-users');
+}
+
+function openEditUser(id) {
+  const users=getUsers(); const u=users.find(x=>x.id===id); if(!u) return;
+  const managers=users.filter(x=>(x.role==='manager'||x.role==='admin')&&x.id!==id);
+  openModal(`
+    <div class="modal-title">Edit User</div>
+    <div class="modal-sub">Update ${u.name}'s account details.</div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Full Name</label><input class="form-input" id="eu-name" value="${u.name}"></div>
+      <div class="form-group"><label class="form-label">Email</label><input class="form-input" id="eu-email" value="${u.email}"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Role</label>
+        <select class="form-input form-select" id="eu-role">
+          <option ${u.role==='admin'?'selected':''} value="admin">Admin</option>
+          <option ${u.role==='executive'?'selected':''} value="executive">Executive</option>
+          <option ${u.role==='manager'?'selected':''} value="manager">Manager</option>
+          <option ${u.role==='employee'?'selected':''} value="employee">Employee</option>
+        </select>
+      </div>
+      <div class="form-group"><label class="form-label">Department</label><input class="form-input" id="eu-dept" value="${u.dept}"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Reports To</label>
+        <select class="form-input form-select" id="eu-mgr">
+          <option value="">None</option>
+          ${managers.map(m=>`<option value="${m.id}" ${u.managerId===m.id?'selected':''}>${m.name}</option>`).join('')}
+        </select>
+      </div>
+      <div class="form-group"><label class="form-label">Status</label>
+        <select class="form-input form-select" id="eu-status">
+          <option ${u.status==='active'?'selected':''} value="active">Active</option>
+          <option ${u.status==='inactive'?'selected':''} value="inactive">Inactive</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group"><label class="form-label">New Password (leave blank to keep)</label><input class="form-input" type="password" id="eu-pwd" placeholder="••••••••"></div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveEditUser(${id})">Save Changes</button>
+    </div>`);
+}
+
+function saveEditUser(id) {
+  const users=getUsers(); const u=users.find(x=>x.id===id); if(!u) return;
+  u.name     = document.getElementById('eu-name').value.trim()||u.name;
+  u.email    = document.getElementById('eu-email').value.trim().toLowerCase()||u.email;
+  u.role     = document.getElementById('eu-role').value;
+  u.dept     = document.getElementById('eu-dept').value.trim()||u.dept;
+  u.managerId= parseInt(document.getElementById('eu-mgr').value)||null;
+  u.status   = document.getElementById('eu-status').value;
+  u.initials = inits(u.name);
+  const np=document.getElementById('eu-pwd').value; if(np) u.pwd=np;
+  saveUsers(users);
+  if (CU.id===id) CU=u;
+  addAudit(`<b>${CU.name}</b> updated account for ${u.name}`);
+  closeModal(); showToast('success','✓','User updated'); navigate('admin-users');
+}
+
+function deleteUser(id) {
+  if (!confirm('Delete this user? Their expense history will be retained.')) return;
+  saveUsers(getUsers().filter(u=>u.id!==id));
+  addAudit(`<b>${CU.name}</b> deleted user ID ${id}`);
+  showToast('success','🗑','User removed'); navigate('admin-users');
+}
+
+function openSendInviteModal(userId) {
+  const u=getUserById(userId); if(!u) return;
+  const token=Math.random().toString(36).substring(2,16)+Date.now().toString(36);
+  const invites=getInvites();
+  invites.push({token,email:u.email,role:u.role,dept:u.dept,managerId:u.managerId,invitedBy:CU.name,used:false,createdAt:new Date().toISOString()});
+  DB.set('invites',invites);
+  const link=`${location.origin}${location.pathname}#invite=${token}`;
+  openModal(`
+    <div class="modal-title">Invite Link — ${u.name}</div>
+    <div class="modal-sub">Share this link so they can set up their account. It expires once used.</div>
+    <div style="background:var(--blue-50);border:1px solid var(--brand-border);border-radius:8px;padding:12px;margin-bottom:14px;font-family:var(--font-mono);font-size:11px;color:var(--brand);word-break:break-all">${link}</div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeModal()">Close</button>
+      <button class="btn btn-primary" onclick="navigator.clipboard.writeText('${link}').then(()=>showToast('success','📋','Link copied!'))">Copy Link</button>
+    </div>`);
+}
+
+function copyInviteLink(token) {
+  const link=`${location.origin}${location.pathname}#invite=${token}`;
+  navigator.clipboard.writeText(link).then(()=>showToast('success','📋','Invite link copied!')).catch(()=>{ const el=document.createElement('input');el.value=link;document.body.appendChild(el);el.select();document.execCommand('copy');document.body.removeChild(el);showToast('success','📋','Copied!'); });
+}
+
+function revokeInvite(token) {
+  DB.set('invites',getInvites().filter(i=>i.token!==token));
+  showToast('info','✗','Invite revoked'); navigate('admin-users');
+}
+
+/* ══════════ EXPENSE DRAWER ══════════ */
+function openDrawer(id) {
+  const e=getExpenses().find(x=>x.id===id); if(!e) return;
+  const emp=getUserById(e.empId);
+  document.getElementById('d-eid').textContent=e.id;
+  document.getElementById('d-title').textContent=e.vendor;
+  let html=`
+    <div class="detail-item"><div class="detail-key">Employee</div><div class="detail-val">${userName(e.empId)}</div></div>
+    <div class="detail-item"><div class="detail-key">Department</div><div class="detail-val">${e.dept}</div></div>
+    <div class="detail-item"><div class="detail-key">Category</div><div class="detail-val">${e.cat}</div></div>
+    <div class="detail-item"><div class="detail-key">Amount</div><div class="detail-val" style="font-size:18px;font-weight:700">₹${e.amount.toLocaleString('en-IN')}</div></div>
+    <div class="detail-item"><div class="detail-key">Date</div><div class="detail-val">${e.date}</div></div>
+    <div class="detail-item"><div class="detail-key">Submitted</div><div class="detail-val">${e.submitted}</div></div>
+    <div class="detail-item"><div class="detail-key">Status</div><div class="detail-val">${statusBadge(e.status)}</div></div>
+    <div class="detail-item"><div class="detail-key">Risk Score</div><div class="detail-val" style="font-size:18px;font-weight:700;color:${riskColor(e.risk)}">${e.risk} / 100</div></div>
+    <div class="detail-item"><div class="detail-key">Trust Score</div><div class="detail-val" style="color:${(emp?.trust||80)>70?'var(--green-600)':'var(--amber-600)'}">${emp?.trust||80} / 100</div></div>`;
+  if (e.flags.length) html+=`<div class="detail-item"><div class="detail-key">AI Flags</div><div class="detail-val">${e.flags.map(f=>`<span class="badge badge-red" style="margin-left:3px">${f}</span>`).join('')}</div></div>`;
+  if (e.note) html+=`<div style="margin-top:14px;background:var(--gray-50);border:1px solid var(--border);border-radius:var(--r);overflow:hidden"><div style="padding:8px 13px;border-bottom:1px solid var(--border);font-size:12px;font-weight:600">Business Purpose</div><div style="padding:10px 13px;font-size:13px;color:var(--text-secondary)">${e.note}</div></div>`;
+  if (e.status==='rejected') {
+    html+=`<div style="margin-top:14px;background:var(--red-50);border:1px solid #fecdca;border-radius:var(--r);padding:13px"><div style="font-size:12px;font-weight:600;color:var(--red-700);margin-bottom:6px">Rejection reason</div>`;
+    if (e.comments?.length) html+=`<div style="font-size:13px;color:var(--red-600)">${e.comments[e.comments.length-1].text}</div>`;
+    html+=`</div><button class="btn btn-primary btn-full" style="margin-top:12px" onclick="navigate('emp-submit');closeDrawer()">Resubmit with corrections →</button>`;
+  }
+  if (e.comments?.length) {
+    html+=`<div style="margin-top:14px"><div style="font-size:11px;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;font-family:var(--font-mono)">Comments</div>`;
+    html+=e.comments.map(c=>`<div class="comment-item"><div class="comment-meta"><span class="comment-author">${c.author}</span><span class="comment-time">${c.time}</span></div><div class="comment-text">${c.text}</div></div>`).join('');
+    html+='</div>';
+  }
+  if ((CU.role==='manager'||CU.role==='admin'||CU.role==='executive')&&(e.status==='pending'||e.status==='flagged')) {
+    html+=`<div style="display:flex;gap:8px;margin-top:16px">
+      <button class="btn btn-success btn-full" onclick="approveExpense('${e.id}');closeDrawer()">✓ Approve</button>
+      <button class="btn btn-danger btn-full" onclick="closeDrawer();openRejectModal('${e.id}')">✗ Reject</button>
+    </div>`;
+  }
+  // Comment add
+  html+=`<div style="margin-top:16px;border-top:1px solid var(--border);padding-top:14px">
+    <div style="font-size:12px;font-weight:600;margin-bottom:8px">Add Comment</div>
+    <div style="display:flex;gap:8px"><input class="form-input" id="new-comment-${e.id}" placeholder="Write a comment…"><button class="btn btn-secondary btn-sm" onclick="addComment('${e.id}')">Post</button></div>
+  </div>`;
+  document.getElementById('d-body').innerHTML=html;
+  document.getElementById('drawer-overlay').classList.add('open');
+  document.getElementById('drawer-panel').classList.add('open');
+}
+
+function addComment(expId) {
+  const inp=document.getElementById('new-comment-'+expId); if(!inp) return;
+  const text=inp.value.trim(); if(!text) return;
+  const ex=getExpenses(); const e=ex.find(x=>x.id===expId); if(!e) return;
+  e.comments=e.comments||[];
+  e.comments.push({author:CU.name,text,time:nowStr()});
+  saveExpenses(ex);
+  inp.value='';
+  showToast('success','💬','Comment added');
+  openDrawer(expId);
+}
+
+function closeDrawer() { document.getElementById('drawer-overlay').classList.remove('open'); document.getElementById('drawer-panel').classList.remove('open'); }
+function closeDrawerOnOverlay(e) { if(e.target===document.getElementById('drawer-overlay')) closeDrawer(); }
+
+/* ══════════ MODAL ══════════ */
+function openModal(html) { document.getElementById('modal-box').innerHTML=html; document.getElementById('modal-overlay').classList.add('open'); }
+function closeModal() { document.getElementById('modal-overlay').classList.remove('open'); }
+
+/* ══════════ TOASTS ══════════ */
+function showToast(type, icon, msg) {
+  const stack=document.getElementById('toast-stack');
+  const t=document.createElement('div');
+  t.className=`toast toast-${type}`;
+  t.innerHTML=`<span style="font-size:15px">${icon}</span><span style="flex:1">${msg}</span>`;
+  stack.appendChild(t);
+  setTimeout(()=>{ t.style.animation='toastOut 0.25s ease forwards'; setTimeout(()=>t.remove(),250); },3200);
+}
+
+/* ══════════ HELPERS ══════════ */
+function statusBadge(s) {
+  const m={approved:['badge-green','Approved'],pending:['badge-amber','Pending'],rejected:['badge-red','Rejected'],flagged:['badge-red','Flagged'],review:['badge-blue','In Review']};
+  const [cls,lbl]=m[s]||['badge-gray',s];
+  return `<span class="badge ${cls}"><span class="badge-dot"></span>${lbl}</span>`;
+}
+function roleBadge(r) {
+  const m={admin:'rb-admin',executive:'rb-executive',manager:'rb-manager',employee:'rb-employee'};
+  return `<span class="role-badge ${m[r]||''}">${r}</span>`;
+}
+function riskColor(r) { return r>70?'var(--red-600)':r>40?'var(--amber-600)':'var(--green-600)'; }
+function timeOfDay() { const h=new Date().getHours(); return h<12?'morning':h<17?'afternoon':'evening'; }
+function fmtDate(d) { return d.toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'}); }
+function nowStr() { const n=new Date(); return `${n.getDate()} ${n.toLocaleString('en',{month:'short'})} · ${n.getHours().toString().padStart(2,'0')}:${n.getMinutes().toString().padStart(2,'0')}`; }
+function randColor() { return ['#1570ef','#7a5af8','#12b76a','#f79009','#f04438','#2e90fa','#fbbf24'][Math.floor(Math.random()*7)]; }
+function inits(name) { return name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2); }
+function initials(name) { return inits(name); }
+function toggleExpand(id) { const el=document.getElementById(id); if(el) el.classList.toggle('open'); }
+
+/* ══════════ AUDIT / NOTIF / TRUST ══════════ */
+function addAudit(text) {
+  const a=getAudit();
+  a.unshift({id:Date.now(),time:nowStr(),text,hash:Math.random().toString(36).substring(2,8)});
+  DB.set('audit',a.slice(0,300));
+}
+function pushNotif(userId,title,desc) {
+  const all=DB.get('notifs')||{};
+  if(!all[userId]) all[userId]=[];
+  all[userId].unshift({id:Date.now(),title,desc,time:nowStr(),read:false});
+  DB.set('notifs',all);
+}
+function bumpTrust(userId,delta) {
+  const users=getUsers(); const u=users.find(x=>x.id===userId); if(!u) return;
+  u.trust=Math.min(100,Math.max(0,(u.trust||80)+delta));
+  saveUsers(users);
+  if (CU.id===userId) CU.trust=u.trust;
+}
+
+/* ══════════ INIT ══════════ */
+document.addEventListener('DOMContentLoaded',()=>{
+  initData();
+  selectRole('admin');
+  startClock();
+  checkInviteHash();
+});
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'){closeDrawer();closeModal();} });
+</script>
+</body>
+</html>
